@@ -1,0 +1,3 @@
+"./Src/task1.o"
+"./Src/task1_it.o"
+"./Startup/startup_stm32g431kbtx.o"

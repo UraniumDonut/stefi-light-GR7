@@ -1,0 +1,2 @@
+task1_it.c:55:6:ISR_error	4	static
+task1_it.c:75:6:ISR_default	4	static
