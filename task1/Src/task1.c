@@ -43,6 +43,7 @@
 /* ------------------------------------ TYPE DEFINITIONS ------------------------------ */
 /* ------------------------------------ GLOBAL VARIABLES ------------------------------ */
 int shouldbeon;
+int buttonbefore;
 
 /* ------------------------------------ PRIVATE VARIABLES ----------------------------- */
 
@@ -120,19 +121,20 @@ int read2(void){
 }
 
 void statecheck(void){
-	if(read2()){
+	int now = read2();
+	if(now && buttonbefore != now){
 		if(shouldbeon){
 			shouldbeon = 0;
 			delay(50);
 			//while(read2()){}
 		}
-		else{
+		else if(buttonbefore != now){
 			shouldbeon = 1;
 			delay(50);
 			//while(read2()){}
 		}
 	}
-
+	buttonbefore = now;
 }
 
 

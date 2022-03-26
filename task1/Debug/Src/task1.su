@@ -1,7 +1,7 @@
-task1.c:59:5:main	8	static,ignoring_inline_asm
-task1.c:86:5:lauflicht	8	static
-task1.c:113:5:read2	16	static
-task1.c:122:6:statecheck	8	static
-task1.c:153:13:GPIO_init	4	static
-task1.c:192:13:delay	24	static,ignoring_inline_asm
-task1.c:204:13:delayws	24	static,ignoring_inline_asm
+task1.c:60:5:main	8	static,ignoring_inline_asm
+task1.c:87:5:lauflicht	8	static
+task1.c:114:5:read2	16	static
+task1.c:123:6:statecheck	16	static
+task1.c:156:13:GPIO_init	4	static
+task1.c:195:13:delay	24	static,ignoring_inline_asm
+task1.c:207:13:delayws	24	static,ignoring_inline_asm
