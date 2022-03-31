@@ -42,8 +42,8 @@
 
 /* ------------------------------------ TYPE DEFINITIONS ------------------------------ */
 /* ------------------------------------ GLOBAL VARIABLES ------------------------------ */
-int shouldbeon;
-int buttonbefore;
+int shouldbeon;							//shouldbeon controls, weather the lights should be running at the moment
+int buttonbefore;						//Buttonbefore is used for checking not for state but for changes of button state
 
 /* ------------------------------------ PRIVATE VARIABLES ----------------------------- */
 
@@ -73,9 +73,8 @@ int main(void)
     /* --- infinite processing loop --- */
     while (1)
     {
-        /* ... Main Loop ... */
     	if(shouldbeon){
-    		lauflicht();
+    		lauflicht();		//run the lights if shey should be running
     	}
     	statecheck();
 
@@ -84,11 +83,14 @@ int main(void)
     return 1;
 }
 
+
+
+/* ------------------------------------ GLOBAL FUNCTIONS ------------------------------ */
 int lauflicht(void){
-	GPIOA->ODR ^= MASK_LED_RED; 		//LED Anschalten
-	delayws(WAITTIME);					//Warten
-	GPIOA->ODR ^= MASK_LED_RED;			//LED Abschalten
-	if(!shouldbeon){return 1;}				//Prüfen, ob Schalter gedrückt ist
+	GPIOA->ODR ^= MASK_LED_RED; 		//LED on
+	delayws(WAITTIME);					//Wait and poll Button
+	GPIOA->ODR ^= MASK_LED_RED;			//LED on
+	if(!shouldbeon){return 1;}			//Check if lights should be running
 	GPIOA->ODR ^= MASK_LED_YELLOW;		//...
 	delayws(WAITTIME);
 	GPIOA->ODR ^= MASK_LED_YELLOW;
@@ -99,7 +101,7 @@ int lauflicht(void){
 	if(!shouldbeon){return 1;}
 	GPIOA->ODR ^= MASK_LED_BLUE;
 	delayws(WAITTIME);
-	GPIOA->ODR ^= MASK_LED_BLUE; 		//Richtungswechsel
+	GPIOA->ODR ^= MASK_LED_BLUE; 		//Change of directions
 	if(!shouldbeon){return 1;}
 	GPIOA->ODR ^= MASK_LED_GREEN;
 	delayws(WAITTIME);
@@ -108,37 +110,28 @@ int lauflicht(void){
 	GPIOA->ODR ^= MASK_LED_YELLOW;
 	delayws(WAITTIME);
 	GPIOA->ODR ^= MASK_LED_YELLOW;
-	return 1;
+	return 0;
 }
 
 int read2(void){
-	int is_on;
-	is_on = GPIOB->IDR;				//Taster S2 Abfragen
-	is_on = (is_on & (1<<5));		//Bitmaske, um S2 Wert zu isolieren und auf Stelle 0 zu bewegen
-	is_on = is_on>>5;
-	return !is_on;					//invertieren, da LOW-Aktiv
-
+	int is_on = GPIOB->IDR;				//Taster S2 Abfragen
+	return !((is_on & (1<<5))>>5);		//Bitmaske, um S2 Wert zu isolieren und auf Stelle 0 zu bewegen invertieren, da LOW-Aktiv
 }
 
-void statecheck(void){
+void statecheck(void){					//Statecheck checks for changes in the Button
 	int now = read2();
 	if(now && buttonbefore != now){
 		if(shouldbeon){
 			shouldbeon = 0;
-			delay(50);
-			//while(read2()){}
+			delay(75);					//The delay debounces the button S2, so statecheck does not run again, if a change was detected
 		}
 		else if(buttonbefore != now){
 			shouldbeon = 1;
-			delay(50);
-			//while(read2()){}
+			delay(75);
 		}
 	}
 	buttonbefore = now;
 }
-
-
-/* ------------------------------------ GLOBAL FUNCTIONS ------------------------------ */
 
 
 /* ------------------------------------ PRIVATE FUNCTIONS ----------------------------- */
@@ -177,7 +170,7 @@ static void GPIO_init(void)
 
     //GPIOB->ODR |= MASK_S2;
     GPIOB->MODER &= ~(3 << 10);             // set Button 2 pin (PB5) to input
-    GPIOB->PUPDR &= ~(3 << 10);				//PULL-UP
+    GPIOB->PUPDR &= ~(3 << 10);				// PULL-UP
     GPIOB->PUPDR |=  (1 << 10);
 }
 
@@ -191,7 +184,7 @@ static void GPIO_init(void)
  * parameters:  ms - delay time in milliseconds
  * returns:     - nothing -
 \* ------------------------------------------------------------------------------------ */
-static void delay(const uint16_t ms)
+static void delay(const uint16_t ms) //regular delay function
 {
 
     for (uint16_t i = 0; i < ms; ++i)
@@ -203,7 +196,7 @@ static void delay(const uint16_t ms)
     }
 }
 
-static void delayws(const uint16_t ms)
+static void delayws(const uint16_t ms) //delay with statecheck function
 {
 
     for (uint16_t i = 0; i < ms; ++i)
