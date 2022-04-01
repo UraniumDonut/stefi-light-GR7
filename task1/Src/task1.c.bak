@@ -114,7 +114,7 @@ int lauflicht(void){
 }
 
 int read2(void){
-	int is_on = GPIOB->IDR;				//Load button S2 into memory
+	int is_on = GPIOB->IDR;				//Taster S2 Abfragen
 	return !((is_on & (1<<5))>>5);		//Bitmaske, um S2 Wert zu isolieren und auf Stelle 0 zu bewegen invertieren, da LOW-Aktiv
 }
 
