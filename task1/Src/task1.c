@@ -147,7 +147,7 @@ void statecheck(void){					//Statecheck checks for changes in the Button
 \* ------------------------------------------------------------------------------------ */
 static void GPIO_init(void)
 {
-    /* enable port clocks */
+    /* enable port clocks*/
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // LEDs: A
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;    // Buttons: B
 
