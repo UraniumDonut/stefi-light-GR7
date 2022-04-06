@@ -403,13 +403,13 @@ LOAD c:/st/stm32cubeide_1.8.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_line    0x00000000000005f7      0x45e ./Src/task1_it.o
  .debug_line    0x0000000000000a55       0x73 ./Startup/startup_stm32g431kbtx.o
 
-.debug_str      0x0000000000000000    0x6f836
- .debug_str     0x0000000000000000    0x6f7bd ./Src/task1.o
-                                      0x6f969 (size before relaxing)
- .debug_str     0x000000000006f7bd       0x48 ./Src/task1_it.o
-                                      0x6f8ff (size before relaxing)
- .debug_str     0x000000000006f805       0x31 ./Startup/startup_stm32g431kbtx.o
-                                         0x56 (size before relaxing)
+.debug_str      0x0000000000000000    0x6f85b
+ .debug_str     0x0000000000000000    0x6f7e2 ./Src/task1.o
+                                      0x6f98e (size before relaxing)
+ .debug_str     0x000000000006f7e2       0x48 ./Src/task1_it.o
+                                      0x6f924 (size before relaxing)
+ .debug_str     0x000000000006f82a       0x31 ./Startup/startup_stm32g431kbtx.o
+                                         0x7b (size before relaxing)
 
 .comment        0x0000000000000000       0x53
  .comment       0x0000000000000000       0x53 ./Src/task1.o

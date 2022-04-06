@@ -41,11 +41,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_line   00000ac8  00000000  00000000  00024ce2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    0006f836  00000000  00000000  000257aa  2**0
+ 19 .debug_str    0006f85b  00000000  00000000  000257aa  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  00094fe0  2**0
+ 20 .comment      00000053  00000000  00000000  00095005  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  0000016c  00000000  00000000  00095034  2**2
+ 21 .debug_frame  0000016c  00000000  00000000  00095058  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -273,11 +273,11 @@ int read2(void){
  800037c:	b480      	push	{r7}
  800037e:	b083      	sub	sp, #12
  8000380:	af00      	add	r7, sp, #0
-	int is_on = GPIOB->IDR;				//Taster S2 Abfragen
+	int is_on = GPIOB->IDR;				//Load button S2 into memory
  8000382:	4b08      	ldr	r3, [pc, #32]	; (80003a4 <read2+0x28>)
  8000384:	691b      	ldr	r3, [r3, #16]
  8000386:	607b      	str	r3, [r7, #4]
-	return !((is_on & (1<<5))>>5);		//Bitmaske, um S2 Wert zu isolieren und auf Stelle 0 zu bewegen invertieren, da LOW-Aktiv
+	return !((is_on & (1<<5))>>5);		//Bitmask to isolate the value of S2 and move it to LSB. Invert because low-active
  8000388:	687b      	ldr	r3, [r7, #4]
  800038a:	f003 0320 	and.w	r3, r3, #32
  800038e:	2b00      	cmp	r3, #0
@@ -362,7 +362,7 @@ static void GPIO_init(void)
 {
  8000408:	b480      	push	{r7}
  800040a:	af00      	add	r7, sp, #0
-    /* enable port clocks */
+    /* enable port clocks*/
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // LEDs: A
  800040c:	4b41      	ldr	r3, [pc, #260]	; (8000514 <GPIO_init+0x10c>)
  800040e:	6cdb      	ldr	r3, [r3, #76]	; 0x4c
@@ -486,7 +486,7 @@ static void GPIO_init(void)
  * parameters:  ms - delay time in milliseconds
  * returns:     - nothing -
 \* ------------------------------------------------------------------------------------ */
-static void delay(const uint16_t ms) //regular delay function
+static void delay(const uint16_t ms)
 {
  800051c:	b480      	push	{r7}
  800051e:	b085      	sub	sp, #20
@@ -533,8 +533,11 @@ static void delay(const uint16_t ms) //regular delay function
  800055e:	4770      	bx	lr
 
 08000560 <delayws>:
+ * parameters:  ms - delay time in milliseconds
+ * returns:     - nothing -
+\* ------------------------------------------------------------------------------------ */
 
-static void delayws(const uint16_t ms) //delay with statecheck function
+static void delayws(const uint16_t ms)
 {
  8000560:	b580      	push	{r7, lr}
  8000562:	b084      	sub	sp, #16

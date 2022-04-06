@@ -7,26 +7,25 @@
  *  Hardware:   STefi Light v1.1
  *  Processor:  STM32G431KBT6U
  *
- *  Author:     Manuel Lederhofer
- *  Datum:      10.09.2021
+ *  Author:     Bartle Leon, Bergler Sebastian
+ *  Datum:      06.04.2022
  *
  *  Version:    2.0
  *  History:
  *      10.09.2021  ML  create project
  *      09.03.2022  ML  port from STM32F042K6T6 to STM32G431KBT6U
+ *      06.04.2022  BL, BS  code changed to fit the requirements
  *
  *  Status:     under development
  *
  *  Description:
- *          Blinks the red LED of STefi Light, currently.
  *          This file contains the main routine and the initialization.
+ *          Pressing button S2 starts the running LED. Pressing Button S2 again stops
+ *          the running LED.
  *
  *  Notes:
  *      - MCU speed at startup is 16 MHz
  *
- *  Todo:
- *      - Change the example code to match the description and requirements
- *          of the requested application in the lab exercise guide.
  *
  ************************************************************************************** */
 
@@ -43,7 +42,7 @@
 /* ------------------------------------ TYPE DEFINITIONS ------------------------------ */
 /* ------------------------------------ GLOBAL VARIABLES ------------------------------ */
 int shouldbeon;							//shouldbeon controls, weather the lights should be running at the moment
-int buttonbefore;						//Buttonbefore is used for checking not for state but for changes of button state
+int buttonbefore;						//buttonbefore is used for checking not for state but for changes of button state
 
 /* ------------------------------------ PRIVATE VARIABLES ----------------------------- */
 
@@ -115,7 +114,7 @@ int lauflicht(void){
 
 int read2(void){
 	int is_on = GPIOB->IDR;				//Load button S2 into memory
-	return !((is_on & (1<<5))>>5);		//Bitmaske, um S2 Wert zu isolieren und auf Stelle 0 zu bewegen invertieren, da LOW-Aktiv
+	return !((is_on & (1<<5))>>5);		//Bitmask to isolate the value of S2 and move it to LSB. Invert because low-active
 }
 
 void statecheck(void){					//Statecheck checks for changes in the Button
@@ -184,7 +183,7 @@ static void GPIO_init(void)
  * parameters:  ms - delay time in milliseconds
  * returns:     - nothing -
 \* ------------------------------------------------------------------------------------ */
-static void delay(const uint16_t ms) //regular delay function
+static void delay(const uint16_t ms)
 {
 
     for (uint16_t i = 0; i < ms; ++i)
@@ -196,7 +195,17 @@ static void delay(const uint16_t ms) //regular delay function
     }
 }
 
-static void delayws(const uint16_t ms) //delay with statecheck function
+/* ------------------------------------------------------------------------------------ *\
+ * method:  static void delay(const uint16_t ms)
+ *
+ * Realizes a millisecond delay by very bad busy-wait. Runs the statecheck function every delay
+ *
+ * requires:    - nothing -
+ * parameters:  ms - delay time in milliseconds
+ * returns:     - nothing -
+\* ------------------------------------------------------------------------------------ */
+
+static void delayws(const uint16_t ms)
 {
 
     for (uint16_t i = 0; i < ms; ++i)

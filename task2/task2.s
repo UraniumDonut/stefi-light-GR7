@@ -88,23 +88,24 @@ init:
 #--- port init
 #- LEDs
     LDR     r1, =GPIOA_MODER    // load port A mode register address
-    MOVS    r2, #0x03           // prepare mask
+    MOVS    r2, #0xFF            // prepare mask Zero all
     LDR     r0, [r1, #0]        // get current value of port A mode register
     BICS    r0, r2              // delete bits
-    MOVS    r2, #0x01           // load configuration mask
+    MOVS    r2, #0x55           // load configuration mask Ouput All
     ORRS    r0, r0, r2          // apply mask
     STR     r0, [r1, #0]        // apply result to port A mode register
 
-#- switch LED off
+#- switch LEDs off
     LDR     r1, =GPIOA_ODR      // load port A output data register
-    MOVS    r2, #0x01           // load mask for LED
+    MOVS    r2, #0xF           // load mask for all LEDs
     LDR     r0, [r1, #0]        // get current value of GPIOA
     ORRS    r0, r0, r2          // configure pin state
     STR     r0, [r1, #0]        // apply settings
 
-#- buttons
 
-    /* ... place your code here ... */
+#- buttons
+    MOV     r3, #0x0
+
 
 
     CPSIE   i                   // enable interrupts globally
@@ -119,6 +120,10 @@ init:
     .global main
     .type   main, %function
 main:
+
+
+    LDR     r1, =GPIOA_ODR      // load port A output data register
+    MOVS    r2, #0x03           // load mask for LED 0
     EORS    r0, r0, r2
     STR     r0, [r1, #0]
 
