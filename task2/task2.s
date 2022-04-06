@@ -80,7 +80,7 @@ init:
 
 #--- enable port clocking
     LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
-    MOV     r2, #0x01           // load mask for adjusting port clock gating (A: LEDs)
+    MOV     r2, #0x03           // load mask for adjusting port clock gating (A and B: LEDs and buttons)
     LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
     ORRS    r0, r0, r2          // configure clock gating for ports
     STR     r0, [r1, #0]        // apply settings
@@ -104,7 +104,23 @@ init:
 
 
 #- buttons
-    MOV     r3, #0x0
+    //LDR
+    MOV     r3, #0x1
+    MOV     r4, #0x0
+
+    LDR     r1, =GPIOB_MODER    // load port B mode register address
+    MOVS    r2, #0x03           // prepare mask Zero all
+    LDR     r0, [r1, #0]        // get current value of port A mode register
+    BICS    r0, r2              // delete bits
+    STR     r0, [r1, #0]        // apply result to port A mode register
+
+    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
+    MOVS    r2, #0x03           // prepare mask Zero all
+    LDR     r0, [r1, #0]        // get current value of port A mode register
+    BICS    r0, r2              // delete bits
+    MOVS    r2, #0x1           // load configuration mask Ouput All
+    ORRS    r0, r0, r2          // apply mask
+    STR     r0, [r1, #0]        // apply result to port A mode register
 
 
 
@@ -120,12 +136,14 @@ init:
     .global main
     .type   main, %function
 main:
+    LDR     r1, =GPIOB_IDR
+    LDR     r0,  [r1, #0]
+    MOV     r2, #0xFE
+    BICS    r0, r2
+    CMP     r0, #0x1
+    IT      EQ
+    BLEQ    todolight
 
-
-    LDR     r1, =GPIOA_ODR      // load port A output data register
-    MOVS    r2, #0x03           // load mask for LED 0
-    EORS    r0, r0, r2
-    STR     r0, [r1, #0]
 
     BL      delay
 
@@ -135,13 +153,29 @@ main:
 
 
 #----------------------------------------------------------------------------------------#
+    .align  2
+    .syntax unified
+    .thumb
+    .thumb_func
+    .global todolight
+    .type   todolight, %function
 
+todolight:
+    LDR     r1, =GPIOA_ODR      // load port A output data register
+    LDR     r0, [r1, #0]        // get current value of GPIOA
+    MOVS    r2, #0x03           // load mask for LED 0
+    EORS    r0, r0, r2
+    STR     r0, [r1, #0]
+    BX      lr                  // ...
+
+#----------------------------------------------------------------------------------------#
     .align  2
     .syntax unified
     .thumb
     .thumb_func
     .global delay
     .type   delay, %function
+
 delay:
     MOVS    r6, #0              // ...
     LDR     r7, =0x400000       // ...
