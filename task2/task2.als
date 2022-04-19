@@ -850,7 +850,7 @@
   79 001a 8446     	    MOV     r12, r0
   80              	
   81              	#--- enable port clocking
-  82 001c 2949     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
+  82 001c 2649     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
   83 001e 4FF00302 	    MOV     r2, #0x03           // load mask for adjusting port clock gating (A and B: LEDs and but
   84 0022 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
   85 0024 1043     	    ORRS    r0, r0, r2          // configure clock gating for ports
@@ -867,7 +867,7 @@
   96 0036 0860     	    STR     r0, [r1, #0]        // apply result to port A mode register
   97              	
   98              	#- switch LEDs off
-  99 0038 2349     	    LDR     r1, =GPIOA_ODR      // load port A output data register
+  99 0038 2049     	    LDR     r1, =GPIOA_ODR      // load port A output data register
  100 003a 0F22     	    MOVS    r2, #0xF           // load mask for all LEDs
  101 003c 0868     	    LDR     r0, [r1, #0]        // get current value of GPIOA
  102 003e 1043     	    ORRS    r0, r0, r2          // configure pin state
@@ -879,190 +879,180 @@
  108 0042 4FF00103 	    MOV     r3, #0x1
  109 0046 4FF00004 	    MOV     r4, #0x0
  110              	
- 111 004a 2049     	    LDR     r1, =GPIOB_MODER    // load port B mode register address
+ 111 004a 1D49     	    LDR     r1, =GPIOB_MODER    // load port B mode register address
  112 004c 0322     	    MOVS    r2, #0x03           // prepare mask Zero all
  113 004e 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
  114 0050 9043     	    BICS    r0, r2              // delete bits
- 115 0052 0860     	    STR     r0, [r1, #0]        // apply result to port A mode register
- 116              	    							//Button S3
- 117 0054 1D49     	    LDR     r1, =GPIOB_MODER    // load port B mode register address
- 118 0056 4FEA8101 	    LSL		r1, r1, #0x02		// Shift left by two
- 119 005a 0C22     	    MOVS    r2, #0x0C           // prepare mask Zero all
- 120 005c 0868     	    LDR     r0, [r1, #0x0]        // get current value of port A mode register
- 121 005e 9043     	    BICS    r0, r2              // delete bits
- 122 0060 0860     	    STR     r0, [r1, #0x0]        // apply result to port A mode register
- 123              	
- 124              	
- 125 0062 1B49     	    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
- 126 0064 0322     	    MOVS    r2, #0x03           // prepare mask Zero all
- 127 0066 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
- 128 0068 9043     	    BICS    r0, r2              // delete bits
- 129 006a 0122     	    MOVS    r2, #0x1           // load configuration mask Ouput All
- 130 006c 1043     	    ORRS    r0, r0, r2          // apply mask
- 131 006e 0860     	    STR     r0, [r1, #0]        // apply result to port A mode register
- 132              	        						//Button S3
- 133 0070 1749     	    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
- 134 0072 4FEA8101 	    LSL		r1, r1, #0x02		// Shift left by two
- 135 0076 0C22     	    MOVS    r2, #0x0C           // prepare mask Zero all
- 136 0078 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
- 137 007a 9043     	    BICS    r0, r2              // delete bits
- 138 007c 0422     	    MOVS    r2, #0x4           // load configuration mask Ouput All
- 139 007e 1043     	    ORRS    r0, r0, r2          // apply mask
- 140 0080 0860     	    STR     r0, [r1, #0]        // apply result to port A mode register
- 141              	
- 142              	
- 143              	
- 144 0082 62B6     	    CPSIE   i                   // enable interrupts globally
- 145              	
- 146              	
- 147              	#----------------------------------------------------------------------------------------#
- 148              	
- 149              	    .align  2
- 150              	    .syntax unified
- 151              	    .thumb
- 152              	    .thumb_func
- 153              	    .global main
- 155              	main:
- 156 0084 1349     	    LDR     r1, =GPIOB_IDR 		//Load input data register
- 157 0086 0868     	    LDR     r0,  [r1, #0]
- 158 0088 4FF0F702 	    MOV     r2, #0xF7
- 159 008c 9043     	    BICS    r0, r2
- 160 008e 0828     	    CMP     r0, #0x8
- 161 0090 08BF     	    IT      EQ
- 162 0092 FFF7FEFF 	    BLEQ    todolight
- 163              	
- 164              	
- 165 0096 FFF7FEFF 	    BL      delay
- 166              	
- 167              	    /* ... replace current code here ... */
- 168              	
- 169 009a FFF7FEBF 	    B       main
- 170              	
- 171              	
- 172              	#----------------------------------------------------------------------------------------#
- 173 009e 00BF     	    .align  2
- 174              	    .syntax unified
- 175              	    .thumb
- 176              	    .thumb_func
- 177              	    .global todolight
- 179              	
- 180              	todolight:
- 181 00a0 0949     	    LDR     r1, =GPIOA_ODR      // load port A output data register
- 182 00a2 0868     	    LDR     r0, [r1, #0]        // get current value of GPIOA
- 183 00a4 0322     	    MOVS    r2, #0x03           // load mask for LED 0
- 184 00a6 5040     	    EORS    r0, r0, r2
- 185 00a8 0860     	    STR     r0, [r1, #0]
- 186 00aa 7047     	    BX      lr                  // ...
- 187              	
- 188              	#----------------------------------------------------------------------------------------#
- 189              	    .align  2
- 190              	    .syntax unified
- 191              	    .thumb
- 192              	    .thumb_func
- 193              	    .global delay
+ 115 0052 4FEA8212 	    LSL		r2, r2, #6			// offset for S3
+ 116 0056 9043     	    BICS    r0, r2              // delete bits
+ 117              	
+ 118 0058 0860     	    STR     r0, [r1, #0]        // apply result to port A mode register
+ 119              	
+ 120              	
+ 121 005a 1A49     	    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
+ 122 005c 0322     	    MOVS    r2, #0x03           // prepare mask Zero all
+ 123 005e 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 124 0060 9043     	    BICS    r0, r2              // delete bits
+ 125 0062 4FEA8212 	    LSL		r2, r2, #6			// offset for S3
+ 126 0066 9043     	    BICS    r0, r2              // delete bits
+ 127 0068 0122     	    MOVS    r2, #0x1           // load configuration mask Output All
+ 128 006a 1043     	    ORRS    r0, r0, r2          // apply mask
+ 129 006c 4FEA8212 	    LSL		r2, r2, #6			// offset for S3
+ 130 0070 1043     	    ORRS    r0, r0, r2          // apply mask
+ 131 0072 0860     	    STR     r0, [r1, #0]        // apply result to port A mode register
+ 132              	
+ 133              	
+ 134 0074 62B6     	    CPSIE   i                   // enable interrupts globally
+ 135              	
+ 136              	
+ 137              	#----------------------------------------------------------------------------------------#
+ 138              	
+ 139 0076 00BF     	    .align  2
+ 140              	    .syntax unified
+ 141              	    .thumb
+ 142              	    .thumb_func
+ 143              	    .global main
+ 145              	main:
+ 146 0078 1349     	    LDR     r1, =GPIOB_IDR 		//Load input data register
+ 147 007a 0868     	    LDR     r0,  [r1, #0]
+ 148 007c 4FF0F702 	    MOV     r2, #0xF7
+ 149 0080 9043     	    BICS    r0, r2
+ 150 0082 0828     	    CMP     r0, #0x8
+ 151 0084 08BF     	    IT      EQ
+ 152 0086 FFF7FEFF 	    BLEQ    todolight
+ 153              	
+ 154              	
+ 155 008a FFF7FEFF 	    BL      delay
+ 156              	
+ 157              	    /* ... replace current code here ... */
+ 158              	
+ 159 008e FFF7FEBF 	    B       main
+ 160              	
+ 161              	
+ 162              	#----------------------------------------------------------------------------------------#
+ 163 0092 00BF     	    .align  2
+ 164              	    .syntax unified
+ 165              	    .thumb
+ 166              	    .thumb_func
+ 167              	    .global todolight
+ 169              	
+ 170              	todolight:
+ 171 0094 0949     	    LDR     r1, =GPIOA_ODR      // load port A output data register
+ 172 0096 0868     	    LDR     r0, [r1, #0]        // get current value of GPIOA
+ 173 0098 0322     	    MOVS    r2, #0x03           // load mask for LED 0
+ 174 009a 5040     	    EORS    r0, r0, r2
+ 175 009c 0860     	    STR     r0, [r1, #0]
+ 176 009e 7047     	    BX      lr                  // ...
+ 177              	
+ 178              	#----------------------------------------------------------------------------------------#
+ 179              	    .align  2
+ 180              	    .syntax unified
+ 181              	    .thumb
+ 182              	    .thumb_func
+ 183              	    .global delay
+ 185              	
+ 186              	delay:
+ 187 00a0 0026     	    MOVS    r6, #0              // ...
+ 188 00a2 4FF48007 	    LDR     r7, =0x400000       // ...
+ 189              	.L1:
+ 190 00a6 0136     	    ADDS    r6, r6, #1          // ...
+ 191 00a8 BE42     	    CMP     r6, r7              // ...
+ 192 00aa FCD1     	    BNE     .L1                 // ...
+ 193 00ac 7047     	    BX      lr                  // ...
+ 194              	
  195              	
- 196              	delay:
- 197 00ac 0026     	    MOVS    r6, #0              // ...
- 198 00ae 4FF48007 	    LDR     r7, =0x400000       // ...
- 199              	.L1:
- 200 00b2 0136     	    ADDS    r6, r6, #1          // ...
- 201 00b4 BE42     	    CMP     r6, r7              // ...
- 202 00b6 FCD1     	    BNE     .L1                 // ...
- 203 00b8 7047     	    BX      lr                  // ...
+ 196              	#----------------------------------------------------------------------------------------#
+ 197              	
+ 198 00ae 00BF     	    .align 2
+ 199              	    .global stop
+ 200              	stop:
+ 201 00b0 00BF     	    NOP                         // do nothing (NOP is here to avoid a debugger crash, only)
+ 202 00b2 FFF7FEBF 	    B       stop                // if this line is reached, something went wrong
+ 203              	
  204              	
- 205              	
- 206              	#----------------------------------------------------------------------------------------#
- 207              	
- 208 00ba 00BF     	    .align 2
- 209              	    .global stop
- 210              	stop:
- 211 00bc 00BF     	    NOP                         // do nothing (NOP is here to avoid a debugger crash, only)
- 212 00be FFF7FEBF 	    B       stop                // if this line is reached, something went wrong
- 213              	
+ 205              	#----------------------------------------------------------------------------------------#
+ 206              	.lp1:           // this label is only to nicify the line up in the .lst file
+ 207 00b6 00004C10 	    .ltorg
+ 207      02401400 
+ 207      00480004 
+ 207      00480C04 
+ 207      00481004 
+ 208              	#----------------------------------------------------------------------------------------#
+ 209              	
+ 210              	
+ 211              	#----------------------------------------------------------------------------------------#
+ 212              	    .section .exhand,"ax"       // section for exception handlers
+ 213              	#----------------------------------------------------------------------------------------#
  214              	
- 215              	#----------------------------------------------------------------------------------------#
- 216              	.lp1:           // this label is only to nicify the line up in the .lst file
- 217 00c2 00004C10 	    .ltorg
- 217      02401400 
- 217      00480004 
- 217      00480C04 
- 217      00481004 
- 218              	#----------------------------------------------------------------------------------------#
- 219              	
- 220              	
- 221              	#----------------------------------------------------------------------------------------#
- 222              	    .section .exhand,"ax"       // section for exception handlers
- 223              	#----------------------------------------------------------------------------------------#
- 224              	
- 225              	    .align  2
- 226              	    .syntax unified
- 227              	    .thumb
- 229              	_nmi:
- 230              	#--- enable clock
- 231 0000 1349     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
- 232 0002 4FF00102 	    MOV     r2, #0x01           // load mask
- 233 0006 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
- 234 0008 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
- 235 000a 0860     	    STR     r0, [r1, #0]        // apply settings
- 236              	
- 237              	#--- init pins
- 238 000c 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
- 239 0010 FF22     	    MOVS    r2, #0xFF           // prepare mask
- 240 0012 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
- 241 0014 9043     	    BICS    r0, r0, r2          // delete bits
- 242 0016 4422     	    MOVS    r2, #0x44           // load configuration mask
- 243 0018 1043     	    ORRS    r0, r0, r2          // configure pins
- 244 001a 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
+ 215              	    .align  2
+ 216              	    .syntax unified
+ 217              	    .thumb
+ 219              	_nmi:
+ 220              	#--- enable clock
+ 221 0000 1349     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
+ 222 0002 4FF00102 	    MOV     r2, #0x01           // load mask
+ 223 0006 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
+ 224 0008 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
+ 225 000a 0860     	    STR     r0, [r1, #0]        // apply settings
+ 226              	
+ 227              	#--- init pins
+ 228 000c 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
+ 229 0010 FF22     	    MOVS    r2, #0xFF           // prepare mask
+ 230 0012 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 231 0014 9043     	    BICS    r0, r0, r2          // delete bits
+ 232 0016 4422     	    MOVS    r2, #0x44           // load configuration mask
+ 233 0018 1043     	    ORRS    r0, r0, r2          // configure pins
+ 234 001a 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
+ 235              	
+ 236              	#--- switch some LEDs on
+ 237 001c 0D49     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
+ 238 001e 0A22     	    MOVS    r2, #0x0A           // load mask for blue and yellow LED
+ 239 0020 0868     	    LDR     r0, [r1, #0]
+ 240 0022 9043     	    BICS    r0, r0, r2
+ 241 0024 0860     	    STR     r0, [r1, #0]        // switch LEDs on
+ 242              	
+ 243 0026 EBE7     	    B   _nmi
+ 244              	
  245              	
- 246              	#--- switch some LEDs on
- 247 001c 0D49     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
- 248 001e 0A22     	    MOVS    r2, #0x0A           // load mask for blue and yellow LED
- 249 0020 0868     	    LDR     r0, [r1, #0]
- 250 0022 9043     	    BICS    r0, r0, r2
- 251 0024 0860     	    STR     r0, [r1, #0]        // switch LEDs on
- 252              	
- 253 0026 EBE7     	    B   _nmi
- 254              	
- 255              	
- 256              	#----------------------------------------------------------------------------------------#
- 257              	
- 258              	    .align  2
- 259              	    .syntax unified
- 260              	    .thumb
- 262              	_hardf:
- 263              	#--- enable clock
- 264 0028 0949     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
- 265 002a 4FF00102 	    MOV     r2, #0x01           // load mask
- 266 002e 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
- 267 0030 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
- 268 0032 0860     	    STR     r0, [r1, #0]        // apply settings
- 269              	
- 270              	#--- init pins
- 271 0034 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
- 272 0038 FF22     	    MOVS    r2, #0xFF           // prepare mask
- 273 003a 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
- 274 003c 9043     	    BICS    r0, r0, r2          // delete bits
- 275 003e 1122     	    MOVS    r2, #0x11           // load configuration mask
- 276 0040 1043     	    ORRS    r0, r0, r2          // configure pins
- 277 0042 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
+ 246              	#----------------------------------------------------------------------------------------#
+ 247              	
+ 248              	    .align  2
+ 249              	    .syntax unified
+ 250              	    .thumb
+ 252              	_hardf:
+ 253              	#--- enable clock
+ 254 0028 0949     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
+ 255 002a 4FF00102 	    MOV     r2, #0x01           // load mask
+ 256 002e 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
+ 257 0030 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
+ 258 0032 0860     	    STR     r0, [r1, #0]        // apply settings
+ 259              	
+ 260              	#--- init pins
+ 261 0034 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
+ 262 0038 FF22     	    MOVS    r2, #0xFF           // prepare mask
+ 263 003a 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 264 003c 9043     	    BICS    r0, r0, r2          // delete bits
+ 265 003e 1122     	    MOVS    r2, #0x11           // load configuration mask
+ 266 0040 1043     	    ORRS    r0, r0, r2          // configure pins
+ 267 0042 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
+ 268              	
+ 269              	#--- switch some LEDs on
+ 270 0044 0349     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
+ 271 0046 0522     	    MOVS    r2, #0x05           // load mask for red and green LED
+ 272 0048 0868     	    LDR     r0, [r1, #0]
+ 273 004a 9043     	    BICS    r0, r0, r2
+ 274 004c 0860     	    STR     r0, [r1, #0]        // switch LEDs on
+ 275              	
+ 276 004e EBE7     	    B       _hardf
+ 277              	
  278              	
- 279              	#--- switch some LEDs on
- 280 0044 0349     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
- 281 0046 0522     	    MOVS    r2, #0x05           // load mask for red and green LED
- 282 0048 0868     	    LDR     r0, [r1, #0]
- 283 004a 9043     	    BICS    r0, r0, r2
- 284 004c 0860     	    STR     r0, [r1, #0]        // switch LEDs on
- 285              	
- 286 004e EBE7     	    B       _hardf
- 287              	
- 288              	
- 289              	#----------------------------------------------------------------------------------------#
- 290              	.lp2:           // this label is only to nicify the line up in the .lst file
- 291 0050 4C100240 	    .ltorg
- 291      14000048 
- 292              	#----------------------------------------------------------------------------------------#
- 293              	
- 294              	    .end
+ 279              	#----------------------------------------------------------------------------------------#
+ 280              	.lp2:           // this label is only to nicify the line up in the .lst file
+ 281 0050 4C100240 	    .ltorg
+ 281      14000048 
+ 282              	#----------------------------------------------------------------------------------------#
+ 283              	
+ 284              	    .end
 DEFINED SYMBOLS
          G431_addr.s:39     *ABS*:0000000040000000 APB1_BASE
          G431_addr.s:40     *ABS*:0000000040010000 APB2_BASE
@@ -1572,19 +1562,19 @@ DEFINED SYMBOLS
          G431_addr.s:763    *ABS*:00000000e004200c DBGMCU_APB1FZR2
          G431_addr.s:764    *ABS*:00000000e0042010 DBGMCU_APB2DZR
              task2.s:46     .vectortable:0000000000000000 $d
-             task2.s:229    .exhand:0000000000000000 _nmi
-             task2.s:262    .exhand:0000000000000028 _hardf
+             task2.s:219    .exhand:0000000000000000 _nmi
+             task2.s:252    .exhand:0000000000000028 _hardf
              task2.s:58     .text:0000000000000000 $t
              task2.s:64     .text:0000000000000000 init
-             task2.s:155    .text:0000000000000084 main
-             task2.s:180    .text:00000000000000a0 todolight
-             task2.s:196    .text:00000000000000ac delay
-             task2.s:210    .text:00000000000000bc stop
-             task2.s:216    .text:00000000000000c2 .lp1
-             task2.s:217    .text:00000000000000c2 $d
-             task2.s:217    .text:00000000000000c4 $d
-             task2.s:225    .exhand:0000000000000000 $t
-             task2.s:290    .exhand:0000000000000050 .lp2
-             task2.s:291    .exhand:0000000000000050 $d
+             task2.s:145    .text:0000000000000078 main
+             task2.s:170    .text:0000000000000094 todolight
+             task2.s:186    .text:00000000000000a0 delay
+             task2.s:200    .text:00000000000000b0 stop
+             task2.s:206    .text:00000000000000b6 .lp1
+             task2.s:207    .text:00000000000000b6 $d
+             task2.s:207    .text:00000000000000b8 $d
+             task2.s:215    .exhand:0000000000000000 $t
+             task2.s:280    .exhand:0000000000000050 .lp2
+             task2.s:281    .exhand:0000000000000050 $d
 
 NO UNDEFINED SYMBOLS

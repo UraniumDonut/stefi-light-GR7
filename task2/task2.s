@@ -112,33 +112,23 @@ init:
     MOVS    r2, #0x03           // prepare mask Zero all
     LDR     r0, [r1, #0]        // get current value of port A mode register
     BICS    r0, r2              // delete bits
-    STR     r0, [r1, #0]        // apply result to port A mode register
-    							//Button S3
-    LDR     r1, =GPIOB_MODER    // load port B mode register address
-    LSL		r1, r1, #0x02		// Shift left by two
-    MOVS    r2, #0x0C           // prepare mask Zero all
-    LDR     r0, [r1, #0x0]        // get current value of port A mode register
+    LSL		r2, r2, #6			// offset for S3
     BICS    r0, r2              // delete bits
-    STR     r0, [r1, #0x0]        // apply result to port A mode register
+
+    STR     r0, [r1, #0]        // apply result to port A mode register
 
 
     LDR     r1, =GPIOB_PUPDR    // load port B mode register address
     MOVS    r2, #0x03           // prepare mask Zero all
     LDR     r0, [r1, #0]        // get current value of port A mode register
     BICS    r0, r2              // delete bits
-    MOVS    r2, #0x1           // load configuration mask Ouput All
-    ORRS    r0, r0, r2          // apply mask
-    STR     r0, [r1, #0]        // apply result to port A mode register
-        						//Button S3
-    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
-    LSL		r1, r1, #0x02		// Shift left by two
-    MOVS    r2, #0x0C           // prepare mask Zero all
-    LDR     r0, [r1, #0]        // get current value of port A mode register
+    LSL		r2, r2, #6			// offset for S3
     BICS    r0, r2              // delete bits
-    MOVS    r2, #0x4           // load configuration mask Ouput All
+    MOVS    r2, #0x1           // load configuration mask Output All
+    ORRS    r0, r0, r2          // apply mask
+    LSL		r2, r2, #6			// offset for S3
     ORRS    r0, r0, r2          // apply mask
     STR     r0, [r1, #0]        // apply result to port A mode register
-
 
 
     CPSIE   i                   // enable interrupts globally
@@ -155,9 +145,9 @@ init:
 main:
     LDR     r1, =GPIOB_IDR 		//Load input data register
     LDR     r0,  [r1, #0]
-    MOV     r2, #0xF7
+    MOV     r2, #0xFE
     BICS    r0, r2
-    CMP     r0, #0x8
+    CMP     r0, #0x1
     IT      EQ
     BLEQ    todolight
 

@@ -17,29 +17,29 @@ Linker script and memory map
  .vectortable   0x0000000008000000       0x10 task2.o
                 0x0000000008000010                . = ALIGN (0x4)
 
-.text           0x0000000008000400       0xd8
+.text           0x0000000008000400       0xcc
  *(.text)
- .text          0x0000000008000400       0xd8 task2.o
+ .text          0x0000000008000400       0xcc task2.o
                 0x0000000008000400                init
-                0x0000000008000484                main
-                0x00000000080004a0                todolight
-                0x00000000080004ac                delay
-                0x00000000080004bc                stop
+                0x0000000008000478                main
+                0x0000000008000494                todolight
+                0x00000000080004a0                delay
+                0x00000000080004b0                stop
 
-.glue_7         0x00000000080004d8        0x0
- .glue_7        0x00000000080004d8        0x0 linker stubs
+.glue_7         0x00000000080004cc        0x0
+ .glue_7        0x00000000080004cc        0x0 linker stubs
 
-.glue_7t        0x00000000080004d8        0x0
- .glue_7t       0x00000000080004d8        0x0 linker stubs
+.glue_7t        0x00000000080004cc        0x0
+ .glue_7t       0x00000000080004cc        0x0 linker stubs
 
-.vfp11_veneer   0x00000000080004d8        0x0
- .vfp11_veneer  0x00000000080004d8        0x0 linker stubs
+.vfp11_veneer   0x00000000080004cc        0x0
+ .vfp11_veneer  0x00000000080004cc        0x0 linker stubs
 
-.v4_bx          0x00000000080004d8        0x0
- .v4_bx         0x00000000080004d8        0x0 linker stubs
+.v4_bx          0x00000000080004cc        0x0
+ .v4_bx         0x00000000080004cc        0x0 linker stubs
 
-.iplt           0x00000000080004d8        0x0
- .iplt          0x00000000080004d8        0x0 task2.o
+.iplt           0x00000000080004cc        0x0
+ .iplt          0x00000000080004cc        0x0 task2.o
 
 .exhand         0x0000000008001000       0x58
  *(.exhand)
@@ -65,8 +65,8 @@ LOAD linker stubs
  .ARM.attributes
                 0x0000000000000000       0x21 task2.o
 
-.debug_line     0x0000000000000000       0xdb
- .debug_line    0x0000000000000000       0xdb task2.o
+.debug_line     0x0000000000000000       0xd3
+ .debug_line    0x0000000000000000       0xd3 task2.o
 
 .debug_info     0x0000000000000000       0x22
  .debug_info    0x0000000000000000       0x22 task2.o
