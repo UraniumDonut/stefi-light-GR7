@@ -104,7 +104,6 @@ init:
 
 
 #- buttons
-    //LDR
     MOV     r3, #0x1
     MOV     r4, #0x0
 
@@ -195,7 +194,7 @@ todoright:
     LDR     r0, [r1, #0]        // get current value of GPIOA
     MOVS    r2, #0x3            // load mask for LED 0+1
     EORS    r0, r0, r2
-    STR     r0, [r1, #0]		//write toggle
+    STR     r0, [r1, #0]		// write toggle
     BX      lr                  // return to main function
 
 #----------------------------------------------------------------------------------------#
