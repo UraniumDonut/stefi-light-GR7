@@ -39,7 +39,6 @@
 
     .include "G431_addr.s"
 
-
 #----------------------------------------------------------------------------------------#
     .section .vectortable,"a"   // vector table at begin of ROM
 #----------------------------------------------------------------------------------------#
@@ -57,9 +56,10 @@
         Look at the .space or the .org assembler directive to insert the address of the
         ISRs at the right place in the vector table. Verify your settings by the help of
         the list file. */
-
-    .word   _exti3              // EXTI3
-
+	.org 0x00000058
+    .word   _exti0              // EXTI3
+	.org 0x0000009C
+    .word   _exti7              // EXTI3
 
 #----------------------------------------------------------------------------------------#
     .text                       // section .text (default section for program code)
@@ -98,26 +98,91 @@ init:
 #--- port init
 #- LEDs
     LDR     r1, =GPIOA_MODER    // load port A mode register address
-    MOVS    r2, #0x03           // prepare mask
+    MOVS    r2, #0xFF           // prepare mask Zero all
     LDR     r0, [r1, #0]        // get current value of port A mode register
     BICS    r0, r2              // delete bits
-    MOVS    r2, #0x01           // load configuration mask
+    MOVS    r2, #0x55           // load configuration mask Output All
     ORRS    r0, r0, r2          // apply mask
     STR     r0, [r1, #0]        // apply result to port A mode register
 
-#- switch LED off
+#- switch LEDs off
     LDR     r1, =GPIOA_ODR      // load port A output data register
-    MOVS    r2, #0x01           // load mask for LED
+    MOVS    r2, #0xF            // load mask for all LEDs
     LDR     r0, [r1, #0]        // get current value of GPIOA
     ORRS    r0, r0, r2          // configure pin state
     STR     r0, [r1, #0]        // apply settings
 
 #- buttons
+    MOV     r3, #0x1
+    MOV     r4, #0x0
 
-    /* ... place your code here ... */
+    LDR     r1, =GPIOB_MODER    // load port B mode register address
+    MOVS    r2, #0x03           // prepare mask Zero all
+    LDR     r0, [r1, #0]        // get current value of port B mode register
+    BICS    r0, r2              // delete bits
+    LSL		r2, r2, #14			// offset for S3
+    BICS    r0, r2              // delete bits
+
+    STR     r0, [r1, #0]        // apply result to port B mode register
+
+
+    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
+    MOVS    r2, #0x03           // prepare mask Zero all
+    LDR     r0, [r1, #0]        // get current value of port B mode register
+    BICS    r0, r2              // delete bits
+    LSL		r2, r2, #14			// offset for S3
+    BICS    r0, r2              // delete bits
+    MOVS    r2, #0x1            // load configuration mask S3
+    ORRS    r0, r0, r2          // apply mask
+    LSL		r2, r2, #14			// offset for S3
+    ORRS    r0, r0, r2          // apply mask
+    STR     r0, [r1, #0]        // apply result to port B mode register
+
+
 
 
 #--- button interrupt config
+	LDR     r1, =EXTI_IMR1
+    LDR     r2, =0x0081
+	LDR     r0, [r1, #0]        // get current value of EXTI
+	BICS    r0, r2              // delete bits
+	ORRS	r0, #1
+    STR     r0, [r1, #0]
+
+	LDR 	r1, =EXTI_RTSR1		//rising trigger
+	LDR		r2,	=0x0081
+	LDR	 	r0, [r1, #0]
+	BICS    r0, r2
+	STR     r0, [r1, #0]
+
+	LDR 	r1, =EXTI_FTSR1		//falling trigger
+	LDR		r2,	=0x0081
+	LDR	 	r0, [r1, #0]
+	BICS    r0, r2
+	ORRS	r0, #1
+	STR     r0, [r1, #0]
+
+    LDR		r1, =SYSCFG_EXTICR1
+    MOVS 	r2, #0xFC
+    LDR     r0, [r1, #0]        // get current value of EXTI
+    BICS    r0, r2              // delete bits
+    MOVS	r2, #0x1
+    ORRS	r0, r2
+	STR     r0, [r1, #0]
+
+	LDR		r1, =NVIC_ICPR0
+    LDR 	r2, =0x00800040
+    LDR     r0, [r1, #0]        // get current value of EXTI
+    ORRS	r0, r0, r2
+	STR     r0, [r1, #0]
+
+    LDR		r1, =NVIC_ISER0
+    LDR 	r2, =0x00800040
+    LDR     r0, [r1, #0]        // get current value of EXTI
+    ORRS	r0, r0, r2
+	STR     r0, [r1, #0]
+
+
 
 #- enable clock for SYSCFG module
     LDR     r1, =RCC_APB2ENR    // load RCC APB2 peripheral clock enable register address
@@ -165,6 +230,15 @@ main:
 
     B       main
 
+
+
+#----------------------------------------------------------------------------------------#
+    .align  2
+    .syntax unified
+    .thumb
+    .thumb_func
+    .global todoleft
+    .type   todoleft, %function
 
 #----------------------------------------------------------------------------------------#
 
@@ -279,12 +353,17 @@ _exti0:
 #--- do the work
 
     /* ... place your code here ... */
-
+	LDR     r1, =GPIOA_ODR
+    EORS    r0, r0, r2
+    STR     r0, [r1, #0]
 
 #--- clear interrupt flag
 
-    /* ... place your code here ... */
-
+    LDR		r1, =EXTI_PR1
+    MOVS	r2, #0x1
+    LDR     r0, [r1, #0]
+    EORS	r0, r0, r2
+    STR     r0, [r1, #0]
 
 #--- leave ISR
     POP     {r1}                // get special content back
@@ -296,8 +375,8 @@ _exti0:
     .align  2
     .syntax unified
     .thumb
-    .type   _exti3, %function
-_exti3:
+    .type   _exti7, %function
+_exti7:
     PUSH    {lr}                // save special content
 
 #--- do the work
