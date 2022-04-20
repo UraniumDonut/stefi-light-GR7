@@ -69,11 +69,11 @@ init:
     MOVS    r2, #0
     MOVS    r3, #0
     MOVS    r4, #0
-    MOVS    r5, #1
+    MOVS    r5, #1				//r5 is Button 3 before
     MOVS    r6, #0
     MOVS    r7, #0
-    MOV     r8, #1
-    MOV     r9, #0
+    MOV     r8, #1				//r8 is Button 0 before
+    MOV     r9, #0				//r9 is the combinding condition
     MOV     r10, r0
     MOV     r11, r0
     MOV     r12, r0
@@ -88,16 +88,16 @@ init:
 #--- port init
 #- LEDs
     LDR     r1, =GPIOA_MODER    // load port A mode register address
-    MOVS    r2, #0xFF            // prepare mask Zero all
+    MOVS    r2, #0xFF           // prepare mask Zero all
     LDR     r0, [r1, #0]        // get current value of port A mode register
     BICS    r0, r2              // delete bits
-    MOVS    r2, #0x55           // load configuration mask Ouput All
+    MOVS    r2, #0x55           // load configuration mask Output All
     ORRS    r0, r0, r2          // apply mask
     STR     r0, [r1, #0]        // apply result to port A mode register
 
 #- switch LEDs off
     LDR     r1, =GPIOA_ODR      // load port A output data register
-    MOVS    r2, #0xF           // load mask for all LEDs
+    MOVS    r2, #0xF            // load mask for all LEDs
     LDR     r0, [r1, #0]        // get current value of GPIOA
     ORRS    r0, r0, r2          // configure pin state
     STR     r0, [r1, #0]        // apply settings
@@ -110,25 +110,25 @@ init:
 
     LDR     r1, =GPIOB_MODER    // load port B mode register address
     MOVS    r2, #0x03           // prepare mask Zero all
-    LDR     r0, [r1, #0]        // get current value of port A mode register
+    LDR     r0, [r1, #0]        // get current value of port B mode register
     BICS    r0, r2              // delete bits
     LSL		r2, r2, #14			// offset for S3
     BICS    r0, r2              // delete bits
 
-    STR     r0, [r1, #0]        // apply result to port A mode register
+    STR     r0, [r1, #0]        // apply result to port B mode register
 
 
     LDR     r1, =GPIOB_PUPDR    // load port B mode register address
     MOVS    r2, #0x03           // prepare mask Zero all
-    LDR     r0, [r1, #0]        // get current value of port A mode register
+    LDR     r0, [r1, #0]        // get current value of port B mode register
     BICS    r0, r2              // delete bits
-    LSL		r2, r2, #6			// offset for S3
+    LSL		r2, r2, #14			// offset for S3
     BICS    r0, r2              // delete bits
-    MOVS    r2, #0x1           // load configuration mask Output All
+    MOVS    r2, #0x1            // load configuration mask S3
     ORRS    r0, r0, r2          // apply mask
     LSL		r2, r2, #14			// offset for S3
     ORRS    r0, r0, r2          // apply mask
-    STR     r0, [r1, #0]        // apply result to port A mode register
+    STR     r0, [r1, #0]        // apply result to port B mode register
 
 
     CPSIE   i                   // enable interrupts globally
@@ -144,39 +144,38 @@ init:
     .type   main, %function
 main:
 
-	MOV     r9, #0
-	MOV		r9, r5
-	LDR     r1, =GPIOB_IDR 		//Load input data register
+	MOV     r9, #0				//clear combined condition
+	MOV		r9, r5				//check button 1 before
+	LDR     r1, =GPIOB_IDR 		//load input data register
     LDR     r0,  [r1, #0]
-    MOV     r2, #0x7F
-    BICS    r0, r2
-    LSR		r0, r0, #6
-    ORRS	r9, r9, r0
-    LSR		r0, r0, #1
-    MOV		r5, r0
-    CMP     r9, #0x1
+    MOV     r2, #0x7F			//mask S3
+    BICS    r0, r2				//delete bits
+    LSR		r0, r0, #6			//shift value to pos. 1
+    ORRS	r9, r9, r0			//add S3 to combined condition
+    LSR		r0, r0, #1			//return s3 state to pos. 0
+    MOV		r5, r0				//set button 3 before state
+    CMP     r9, #0x1			//check combined condition
     IT      EQ
-    BLEQ    todoleft
+    BLEQ    todoleft			//branch if true
 
-	MOV     r9, #0
-	MOV		r9, r8
+	MOV     r9, #0				//clear combined condition
+	MOV		r9, r8				//check button 1 before
 	LDR     r1, =GPIOB_IDR 		//Load input data register
     LDR     r0,  [r1, #0]
-    MOV     r2, #0xFE
-    BICS    r0, r2
-    LSL		r0, r0, #1
-    ORRS	r9, r9, r0
-    LSR		r0, r0, #1
-    MOV		r8, r0
-    CMP     r9, #0x1
+    MOV     r2, #0xFE			//mask S0
+    BICS    r0, r2				//delete bits
+    LSL		r0, r0, #1			//shift value to pos. 1
+    ORRS	r9, r9, r0			//add S0 to combined condition
+    LSR		r0, r0, #1			//return s0 state to pos. 0
+    MOV		r8, r0				//set button 0 before state
+    CMP     r9, #0x1			//check combined condition
     IT      EQ
-    BLEQ    todoright
+    BLEQ    todoright			//branch if true
 
 
 
     BL      delay
 
-    /* ... replace current code here ... */
 
     B       main
 
@@ -194,10 +193,10 @@ todoright:
 	MOV		r8, #0
     LDR     r1, =GPIOA_ODR      // load port A output data register
     LDR     r0, [r1, #0]        // get current value of GPIOA
-    MOVS    r2, #0x3           // load mask for LED 0
+    MOVS    r2, #0x3            // load mask for LED 0+1
     EORS    r0, r0, r2
-    STR     r0, [r1, #0]
-    BX      lr                  // ...
+    STR     r0, [r1, #0]		//write toggle
+    BX      lr                  // return to main function
 
 #----------------------------------------------------------------------------------------#
     .align  2
@@ -211,10 +210,10 @@ todoleft:
 	MOV		r5, #0
     LDR     r1, =GPIOA_ODR      // load port A output data register
     LDR     r0, [r1, #0]        // get current value of GPIOA
-    MOVS    r2, #0xC           // load mask for LED 0
+    MOVS    r2, #0xC            // load mask for LED 2+3
     EORS    r0, r0, r2
-    STR     r0, [r1, #0]
-    BX      lr                  // ...
+    STR     r0, [r1, #0]		//write toggle
+    BX      lr                  // return to main function
 
 #----------------------------------------------------------------------------------------#
     .align  2

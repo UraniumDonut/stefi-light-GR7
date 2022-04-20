@@ -81,7 +81,7 @@ Disassembly of section .text:
  8000460:	2203      	movs	r2, #3
  8000462:	6808      	ldr	r0, [r1, #0]
  8000464:	4390      	bics	r0, r2
- 8000466:	ea4f 1282 	mov.w	r2, r2, lsl #6
+ 8000466:	ea4f 3282 	mov.w	r2, r2, lsl #14
  800046a:	4390      	bics	r0, r2
  800046c:	2201      	movs	r2, #1
  800046e:	4310      	orrs	r0, r2

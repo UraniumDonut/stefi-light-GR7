@@ -840,11 +840,11 @@
   69 0006 0022     	    MOVS    r2, #0
   70 0008 0023     	    MOVS    r3, #0
   71 000a 0024     	    MOVS    r4, #0
-  72 000c 0125     	    MOVS    r5, #1
+  72 000c 0125     	    MOVS    r5, #1				//r5 is Button 1 before
   73 000e 0026     	    MOVS    r6, #0
   74 0010 0027     	    MOVS    r7, #0
-  75 0012 4FF00108 	    MOV     r8, #1
-  76 0016 4FF00009 	    MOV     r9, #0
+  75 0012 4FF00108 	    MOV     r8, #1				//r8 is Button 2 before
+  76 0016 4FF00009 	    MOV     r9, #0				//r9 is the combinding condition
   77 001a 8246     	    MOV     r10, r0
   78 001c 8346     	    MOV     r11, r0
   79 001e 8446     	    MOV     r12, r0
@@ -881,7 +881,7 @@
  110              	
  111 004e 3049     	    LDR     r1, =GPIOB_MODER    // load port B mode register address
  112 0050 0322     	    MOVS    r2, #0x03           // prepare mask Zero all
- 113 0052 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 113 0052 0868     	    LDR     r0, [r1, #0]        // get current value of port B mode register
  114 0054 9043     	    BICS    r0, r2              // delete bits
  115 0056 4FEA8232 	    LSL		r2, r2, #14			// offset for S3
  116 005a 9043     	    BICS    r0, r2              // delete bits
@@ -891,11 +891,11 @@
  120              	
  121 005e 2D49     	    LDR     r1, =GPIOB_PUPDR    // load port B mode register address
  122 0060 0322     	    MOVS    r2, #0x03           // prepare mask Zero all
- 123 0062 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 123 0062 0868     	    LDR     r0, [r1, #0]        // get current value of port B mode register
  124 0064 9043     	    BICS    r0, r2              // delete bits
- 125 0066 4FEA8212 	    LSL		r2, r2, #6			// offset for S3
+ 125 0066 4FEA8232 	    LSL		r2, r2, #14			// offset for S3
  126 006a 9043     	    BICS    r0, r2              // delete bits
- 127 006c 0122     	    MOVS    r2, #0x1           // load configuration mask Output All
+ 127 006c 0122     	    MOVS    r2, #0x1            // load configuration mask Output All
  128 006e 1043     	    ORRS    r0, r0, r2          // apply mask
  129 0070 4FEA8232 	    LSL		r2, r2, #14			// offset for S3
  130 0074 1043     	    ORRS    r0, r0, r2          // apply mask
