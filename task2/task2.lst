@@ -5,7 +5,7 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .vectortable  00000010  08000000  08000000  00010000  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  1 .text         000000cc  08000400  08000400  00010400  2**2
+  1 .text         00000120  08000400  08000400  00010400  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   2 .exhand       00000058  08001000  08001000  00011000  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
@@ -15,13 +15,14 @@ SYMBOL TABLE:
 08001000 l    d  .exhand	00000000 .exhand
 08001000 l     F .exhand	00000000 _nmi
 08001028 l     F .exhand	00000000 _hardf
-080004b6 l       .text	00000000 .lp1
+08000506 l       .text	00000000 .lp1
 08001050 l       .exhand	00000000 .lp2
 08000400 g     F .text	00000000 init
-08000478 g     F .text	00000000 main
-080004a0 g     F .text	00000000 delay
-08000494 g     F .text	00000000 todolight
-080004b0 g       .text	00000000 stop
+080004e4 g     F .text	00000000 todoleft
+0800047c g     F .text	00000000 main
+080004f4 g     F .text	00000000 delay
+080004d4 g     F .text	00000000 todoright
+08000500 g       .text	00000000 stop
 
 
 
@@ -42,94 +43,122 @@ Disassembly of section .text:
  8000406:	2200      	movs	r2, #0
  8000408:	2300      	movs	r3, #0
  800040a:	2400      	movs	r4, #0
- 800040c:	2500      	movs	r5, #0
+ 800040c:	2501      	movs	r5, #1
  800040e:	2600      	movs	r6, #0
  8000410:	2700      	movs	r7, #0
- 8000412:	4680      	mov	r8, r0
- 8000414:	4681      	mov	r9, r0
- 8000416:	4682      	mov	sl, r0
- 8000418:	4683      	mov	fp, r0
- 800041a:	4684      	mov	ip, r0
- 800041c:	4926      	ldr	r1, [pc, #152]	; (80004b8 <.lp1+0x2>)
- 800041e:	f04f 0203 	mov.w	r2, #3
- 8000422:	6808      	ldr	r0, [r1, #0]
- 8000424:	4310      	orrs	r0, r2
- 8000426:	6008      	str	r0, [r1, #0]
- 8000428:	f04f 4190 	mov.w	r1, #1207959552	; 0x48000000
- 800042c:	22ff      	movs	r2, #255	; 0xff
- 800042e:	6808      	ldr	r0, [r1, #0]
- 8000430:	4390      	bics	r0, r2
- 8000432:	2255      	movs	r2, #85	; 0x55
- 8000434:	4310      	orrs	r0, r2
- 8000436:	6008      	str	r0, [r1, #0]
- 8000438:	4920      	ldr	r1, [pc, #128]	; (80004bc <.lp1+0x6>)
- 800043a:	220f      	movs	r2, #15
- 800043c:	6808      	ldr	r0, [r1, #0]
- 800043e:	4310      	orrs	r0, r2
- 8000440:	6008      	str	r0, [r1, #0]
- 8000442:	f04f 0301 	mov.w	r3, #1
- 8000446:	f04f 0400 	mov.w	r4, #0
- 800044a:	491d      	ldr	r1, [pc, #116]	; (80004c0 <.lp1+0xa>)
- 800044c:	2203      	movs	r2, #3
- 800044e:	6808      	ldr	r0, [r1, #0]
- 8000450:	4390      	bics	r0, r2
- 8000452:	ea4f 1282 	mov.w	r2, r2, lsl #6
- 8000456:	4390      	bics	r0, r2
- 8000458:	6008      	str	r0, [r1, #0]
- 800045a:	491a      	ldr	r1, [pc, #104]	; (80004c4 <.lp1+0xe>)
- 800045c:	2203      	movs	r2, #3
- 800045e:	6808      	ldr	r0, [r1, #0]
- 8000460:	4390      	bics	r0, r2
- 8000462:	ea4f 1282 	mov.w	r2, r2, lsl #6
- 8000466:	4390      	bics	r0, r2
- 8000468:	2201      	movs	r2, #1
- 800046a:	4310      	orrs	r0, r2
- 800046c:	ea4f 1282 	mov.w	r2, r2, lsl #6
- 8000470:	4310      	orrs	r0, r2
- 8000472:	6008      	str	r0, [r1, #0]
- 8000474:	b662      	cpsie	i
- 8000476:	bf00      	nop
+ 8000412:	f04f 0801 	mov.w	r8, #1
+ 8000416:	f04f 0900 	mov.w	r9, #0
+ 800041a:	4682      	mov	sl, r0
+ 800041c:	4683      	mov	fp, r0
+ 800041e:	4684      	mov	ip, r0
+ 8000420:	4939      	ldr	r1, [pc, #228]	; (8000508 <.lp1+0x2>)
+ 8000422:	f04f 0203 	mov.w	r2, #3
+ 8000426:	6808      	ldr	r0, [r1, #0]
+ 8000428:	4310      	orrs	r0, r2
+ 800042a:	6008      	str	r0, [r1, #0]
+ 800042c:	f04f 4190 	mov.w	r1, #1207959552	; 0x48000000
+ 8000430:	22ff      	movs	r2, #255	; 0xff
+ 8000432:	6808      	ldr	r0, [r1, #0]
+ 8000434:	4390      	bics	r0, r2
+ 8000436:	2255      	movs	r2, #85	; 0x55
+ 8000438:	4310      	orrs	r0, r2
+ 800043a:	6008      	str	r0, [r1, #0]
+ 800043c:	4933      	ldr	r1, [pc, #204]	; (800050c <.lp1+0x6>)
+ 800043e:	220f      	movs	r2, #15
+ 8000440:	6808      	ldr	r0, [r1, #0]
+ 8000442:	4310      	orrs	r0, r2
+ 8000444:	6008      	str	r0, [r1, #0]
+ 8000446:	f04f 0301 	mov.w	r3, #1
+ 800044a:	f04f 0400 	mov.w	r4, #0
+ 800044e:	4930      	ldr	r1, [pc, #192]	; (8000510 <.lp1+0xa>)
+ 8000450:	2203      	movs	r2, #3
+ 8000452:	6808      	ldr	r0, [r1, #0]
+ 8000454:	4390      	bics	r0, r2
+ 8000456:	ea4f 3282 	mov.w	r2, r2, lsl #14
+ 800045a:	4390      	bics	r0, r2
+ 800045c:	6008      	str	r0, [r1, #0]
+ 800045e:	492d      	ldr	r1, [pc, #180]	; (8000514 <.lp1+0xe>)
+ 8000460:	2203      	movs	r2, #3
+ 8000462:	6808      	ldr	r0, [r1, #0]
+ 8000464:	4390      	bics	r0, r2
+ 8000466:	ea4f 1282 	mov.w	r2, r2, lsl #6
+ 800046a:	4390      	bics	r0, r2
+ 800046c:	2201      	movs	r2, #1
+ 800046e:	4310      	orrs	r0, r2
+ 8000470:	ea4f 3282 	mov.w	r2, r2, lsl #14
+ 8000474:	4310      	orrs	r0, r2
+ 8000476:	6008      	str	r0, [r1, #0]
+ 8000478:	b662      	cpsie	i
+ 800047a:	bf00      	nop
 
-08000478 <main>:
- 8000478:	4913      	ldr	r1, [pc, #76]	; (80004c8 <.lp1+0x12>)
- 800047a:	6808      	ldr	r0, [r1, #0]
- 800047c:	f04f 02f7 	mov.w	r2, #247	; 0xf7
- 8000480:	4390      	bics	r0, r2
- 8000482:	2808      	cmp	r0, #8
- 8000484:	bf08      	it	eq
- 8000486:	f000 f805 	bleq	8000494 <todolight>
- 800048a:	f000 f809 	bl	80004a0 <delay>
- 800048e:	f7ff bff3 	b.w	8000478 <main>
- 8000492:	bf00      	nop
+0800047c <main>:
+ 800047c:	f04f 0900 	mov.w	r9, #0
+ 8000480:	46a9      	mov	r9, r5
+ 8000482:	4925      	ldr	r1, [pc, #148]	; (8000518 <.lp1+0x12>)
+ 8000484:	6808      	ldr	r0, [r1, #0]
+ 8000486:	f04f 027f 	mov.w	r2, #127	; 0x7f
+ 800048a:	4390      	bics	r0, r2
+ 800048c:	ea4f 1090 	mov.w	r0, r0, lsr #6
+ 8000490:	ea59 0900 	orrs.w	r9, r9, r0
+ 8000494:	ea4f 0050 	mov.w	r0, r0, lsr #1
+ 8000498:	4605      	mov	r5, r0
+ 800049a:	f1b9 0f01 	cmp.w	r9, #1
+ 800049e:	bf08      	it	eq
+ 80004a0:	f000 f820 	bleq	80004e4 <todoleft>
+ 80004a4:	f04f 0900 	mov.w	r9, #0
+ 80004a8:	46c1      	mov	r9, r8
+ 80004aa:	491b      	ldr	r1, [pc, #108]	; (8000518 <.lp1+0x12>)
+ 80004ac:	6808      	ldr	r0, [r1, #0]
+ 80004ae:	f04f 02fe 	mov.w	r2, #254	; 0xfe
+ 80004b2:	4390      	bics	r0, r2
+ 80004b4:	ea4f 0040 	mov.w	r0, r0, lsl #1
+ 80004b8:	ea59 0900 	orrs.w	r9, r9, r0
+ 80004bc:	ea4f 0050 	mov.w	r0, r0, lsr #1
+ 80004c0:	4680      	mov	r8, r0
+ 80004c2:	f1b9 0f01 	cmp.w	r9, #1
+ 80004c6:	bf08      	it	eq
+ 80004c8:	f000 f804 	bleq	80004d4 <todoright>
+ 80004cc:	f000 f812 	bl	80004f4 <delay>
+ 80004d0:	f7ff bfd4 	b.w	800047c <main>
 
-08000494 <todolight>:
- 8000494:	4909      	ldr	r1, [pc, #36]	; (80004bc <.lp1+0x6>)
- 8000496:	6808      	ldr	r0, [r1, #0]
- 8000498:	2203      	movs	r2, #3
- 800049a:	4050      	eors	r0, r2
- 800049c:	6008      	str	r0, [r1, #0]
- 800049e:	4770      	bx	lr
+080004d4 <todoright>:
+ 80004d4:	f04f 0800 	mov.w	r8, #0
+ 80004d8:	490c      	ldr	r1, [pc, #48]	; (800050c <.lp1+0x6>)
+ 80004da:	6808      	ldr	r0, [r1, #0]
+ 80004dc:	2203      	movs	r2, #3
+ 80004de:	4050      	eors	r0, r2
+ 80004e0:	6008      	str	r0, [r1, #0]
+ 80004e2:	4770      	bx	lr
 
-080004a0 <delay>:
- 80004a0:	2600      	movs	r6, #0
- 80004a2:	f44f 0780 	mov.w	r7, #4194304	; 0x400000
- 80004a6:	3601      	adds	r6, #1
- 80004a8:	42be      	cmp	r6, r7
- 80004aa:	d1fc      	bne.n	80004a6 <delay+0x6>
- 80004ac:	4770      	bx	lr
- 80004ae:	bf00      	nop
+080004e4 <todoleft>:
+ 80004e4:	f04f 0500 	mov.w	r5, #0
+ 80004e8:	4908      	ldr	r1, [pc, #32]	; (800050c <.lp1+0x6>)
+ 80004ea:	6808      	ldr	r0, [r1, #0]
+ 80004ec:	220c      	movs	r2, #12
+ 80004ee:	4050      	eors	r0, r2
+ 80004f0:	6008      	str	r0, [r1, #0]
+ 80004f2:	4770      	bx	lr
 
-080004b0 <stop>:
- 80004b0:	bf00      	nop
- 80004b2:	f7ff bffd 	b.w	80004b0 <stop>
+080004f4 <delay>:
+ 80004f4:	2600      	movs	r6, #0
+ 80004f6:	4f09      	ldr	r7, [pc, #36]	; (800051c <.lp1+0x16>)
+ 80004f8:	3601      	adds	r6, #1
+ 80004fa:	42be      	cmp	r6, r7
+ 80004fc:	d1fc      	bne.n	80004f8 <delay+0x4>
+ 80004fe:	4770      	bx	lr
 
-080004b6 <.lp1>:
- 80004b6:	0000      	.short	0x0000
- 80004b8:	4002104c 	.word	0x4002104c
- 80004bc:	48000014 	.word	0x48000014
- 80004c0:	48000400 	.word	0x48000400
- 80004c4:	4800040c 	.word	0x4800040c
- 80004c8:	48000410 	.word	0x48000410
+08000500 <stop>:
+ 8000500:	bf00      	nop
+ 8000502:	f7ff bffd 	b.w	8000500 <stop>
+
+08000506 <.lp1>:
+ 8000506:	0000      	.short	0x0000
+ 8000508:	4002104c 	.word	0x4002104c
+ 800050c:	48000014 	.word	0x48000014
+ 8000510:	48000400 	.word	0x48000400
+ 8000514:	4800040c 	.word	0x4800040c
+ 8000518:	48000410 	.word	0x48000410
+ 800051c:	00019640 	.word	0x00019640
 
 Disassembly of section .exhand:
 

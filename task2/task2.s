@@ -69,11 +69,11 @@ init:
     MOVS    r2, #0
     MOVS    r3, #0
     MOVS    r4, #0
-    MOVS    r5, #0
+    MOVS    r5, #1
     MOVS    r6, #0
     MOVS    r7, #0
-    MOV     r8, r0
-    MOV     r9, r0
+    MOV     r8, #1
+    MOV     r9, #0
     MOV     r10, r0
     MOV     r11, r0
     MOV     r12, r0
@@ -112,7 +112,7 @@ init:
     MOVS    r2, #0x03           // prepare mask Zero all
     LDR     r0, [r1, #0]        // get current value of port A mode register
     BICS    r0, r2              // delete bits
-    LSL		r2, r2, #6			// offset for S3
+    LSL		r2, r2, #14			// offset for S3
     BICS    r0, r2              // delete bits
 
     STR     r0, [r1, #0]        // apply result to port A mode register
@@ -126,7 +126,7 @@ init:
     BICS    r0, r2              // delete bits
     MOVS    r2, #0x1           // load configuration mask Output All
     ORRS    r0, r0, r2          // apply mask
-    LSL		r2, r2, #6			// offset for S3
+    LSL		r2, r2, #14			// offset for S3
     ORRS    r0, r0, r2          // apply mask
     STR     r0, [r1, #0]        // apply result to port A mode register
 
@@ -143,13 +143,35 @@ init:
     .global main
     .type   main, %function
 main:
-    LDR     r1, =GPIOB_IDR 		//Load input data register
+
+	MOV     r9, #0
+	MOV		r9, r5
+	LDR     r1, =GPIOB_IDR 		//Load input data register
+    LDR     r0,  [r1, #0]
+    MOV     r2, #0x7F
+    BICS    r0, r2
+    LSR		r0, r0, #6
+    ORRS	r9, r9, r0
+    LSR		r0, r0, #1
+    MOV		r5, r0
+    CMP     r9, #0x1
+    IT      EQ
+    BLEQ    todoleft
+
+	MOV     r9, #0
+	MOV		r9, r8
+	LDR     r1, =GPIOB_IDR 		//Load input data register
     LDR     r0,  [r1, #0]
     MOV     r2, #0xFE
     BICS    r0, r2
-    CMP     r0, #0x1
+    LSL		r0, r0, #1
+    ORRS	r9, r9, r0
+    LSR		r0, r0, #1
+    MOV		r8, r0
+    CMP     r9, #0x1
     IT      EQ
-    BLEQ    todolight
+    BLEQ    todoright
+
 
 
     BL      delay
@@ -159,18 +181,37 @@ main:
     B       main
 
 
+
 #----------------------------------------------------------------------------------------#
     .align  2
     .syntax unified
     .thumb
     .thumb_func
-    .global todolight
-    .type   todolight, %function
+    .global todoright
+    .type   todoright, %function
 
-todolight:
+todoright:
+	MOV		r8, #0
     LDR     r1, =GPIOA_ODR      // load port A output data register
     LDR     r0, [r1, #0]        // get current value of GPIOA
-    MOVS    r2, #0x03           // load mask for LED 0
+    MOVS    r2, #0x3           // load mask for LED 0
+    EORS    r0, r0, r2
+    STR     r0, [r1, #0]
+    BX      lr                  // ...
+
+#----------------------------------------------------------------------------------------#
+    .align  2
+    .syntax unified
+    .thumb
+    .thumb_func
+    .global todoleft
+    .type   todoleft, %function
+
+todoleft:
+	MOV		r5, #0
+    LDR     r1, =GPIOA_ODR      // load port A output data register
+    LDR     r0, [r1, #0]        // get current value of GPIOA
+    MOVS    r2, #0xC           // load mask for LED 0
     EORS    r0, r0, r2
     STR     r0, [r1, #0]
     BX      lr                  // ...
@@ -185,7 +226,7 @@ todolight:
 
 delay:
     MOVS    r6, #0              // ...
-    LDR     r7, =0x400000       // ...
+    LDR     r7, =0x19640       // ...
 .L1:
     ADDS    r6, r6, #1          // ...
     CMP     r6, r7              // ...
