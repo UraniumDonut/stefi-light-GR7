@@ -1,0 +1,93 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+IVECS            0x0000000008000000 0x00000000000001d8 r
+PGM              0x0000000008000400 0x0000000000000c00 xr
+EXHANDS          0x0000000008001000 0x0000000000000400 xr
+RAM              0x0000000020000000 0x0000000000001800 rw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+
+.vectortable    0x0000000008000000       0xa0
+                0x0000000008000000                . = ALIGN (0x4)
+ *(.vectortable)
+ .vectortable   0x0000000008000000       0xa0 task3.o
+                0x00000000080000a0                . = ALIGN (0x4)
+
+.text           0x0000000008000400      0x130
+ *(.text)
+ .text          0x0000000008000400      0x130 task3.o
+                0x0000000008000400                init
+                0x00000000080004d8                main
+                0x00000000080004e4                delay
+                0x00000000080004f4                stop
+
+.glue_7         0x0000000008000530        0x0
+ .glue_7        0x0000000008000530        0x0 linker stubs
+
+.glue_7t        0x0000000008000530        0x0
+ .glue_7t       0x0000000008000530        0x0 linker stubs
+
+.vfp11_veneer   0x0000000008000530        0x0
+ .vfp11_veneer  0x0000000008000530        0x0 linker stubs
+
+.v4_bx          0x0000000008000530        0x0
+ .v4_bx         0x0000000008000530        0x0 linker stubs
+
+.iplt           0x0000000008000530        0x0
+ .iplt          0x0000000008000530        0x0 task3.o
+
+.exhand         0x0000000008001000       0xb0
+ *(.exhand)
+ .exhand        0x0000000008001000       0xb0 task3.o
+LOAD task3.o
+OUTPUT(task3.elf elf32-littlearm)
+LOAD linker stubs
+
+.rel.dyn        0x00000000080010b0        0x0
+ .rel.iplt      0x00000000080010b0        0x0 task3.o
+
+.data           0x00000000080010b0        0x0
+ .data          0x00000000080010b0        0x0 task3.o
+
+.igot.plt       0x00000000080010b0        0x0
+ .igot.plt      0x00000000080010b0        0x0 task3.o
+
+.bss            0x00000000080010b0        0x0
+ .bss           0x00000000080010b0        0x0 task3.o
+
+.ARM.attributes
+                0x0000000000000000       0x21
+ .ARM.attributes
+                0x0000000000000000       0x21 task3.o
+
+.debug_line     0x0000000000000000      0x129
+ .debug_line    0x0000000000000000      0x129 task3.o
+
+.debug_info     0x0000000000000000       0x22
+ .debug_info    0x0000000000000000       0x22 task3.o
+
+.debug_abbrev   0x0000000000000000       0x12
+ .debug_abbrev  0x0000000000000000       0x12 task3.o
+
+.debug_aranges  0x0000000000000000       0x28
+ .debug_aranges
+                0x0000000000000000       0x28 task3.o
+
+.debug_str      0x0000000000000000       0x35
+ .debug_str     0x0000000000000000       0x35 task3.o
+
+.debug_ranges   0x0000000000000000       0x20
+ .debug_ranges  0x0000000000000000       0x20 task3.o
+
+Cross Reference Table
+
+Symbol                                            File
+delay                                             task3.o
+init                                              task3.o
+main                                              task3.o
+stop                                              task3.o
+todoleft                                          task3.o
