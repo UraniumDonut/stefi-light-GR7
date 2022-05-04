@@ -57,9 +57,9 @@
         ISRs at the right place in the vector table. Verify your settings by the help of
         the list file. */
 	.org 0x00000058
-    .word   _exti0              // EXTI3
+    .word   _exti0              // EXTI0
 	.org 0x0000009C
-    .word   _exti7              // EXTI3
+    .word   _exti7              // EXTI7
 
 #----------------------------------------------------------------------------------------#
     .text                       // section .text (default section for program code)
@@ -90,7 +90,7 @@ init:
 
 #--- enable port clocking
     LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
-    MOV     r2, #0x01           // load mask for adjusting port clock gating (A: LEDs)
+    MOV     r2, #0x03           // load mask for adjusting port clock gating (A: LEDs)
     LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
     ORRS    r0, r0, r2          // configure clock gating for ports
     STR     r0, [r1, #0]        // apply settings
@@ -109,7 +109,7 @@ init:
     LDR     r1, =GPIOA_ODR      // load port A output data register
     MOVS    r2, #0xF            // load mask for all LEDs
     LDR     r0, [r1, #0]        // get current value of GPIOA
-    ORRS    r0, r0, r2          // configure pin state
+    BICS    r0, r0, r2          // configure pin state
     STR     r0, [r1, #0]        // apply settings
 
 #- buttons
@@ -142,33 +142,53 @@ init:
 
 
 #--- button interrupt config
-	LDR     r1, =EXTI_IMR1
+#- enable clock for SYSCFG module
+    LDR     r1, =RCC_APB2ENR    // load RCC APB2 peripheral clock enable register address
+    MOVS    r2, #0x01           // bit 0: SYSCFGCOMPEN --> SYSCFG + COMP clock enable
+    LDR     r0, [r1, #0]        // get current value
+    ORRS    r0, r0, r2          // set bit
+    STR     r0, [r1, #0]        // enable clock
+
+#- connect GPIO pins of the buttons to EXTended Interrupt controller lines (EXTI)
+#  in SYSCFG module (SYSCFG_* registers)
+    LDR		r1, =SYSCFG_EXTICR1	// Set input line button s0
+    MOVS 	r2, #0xF
+    LDR     r0, [r1, #0]        // get current value of EXTI
+    BICS    r0, r2              // delete bits
+    MOVS	r2, #0x0001
+    ORRS	r0, r0, r2
+	STR     r0, [r1, #0]
+
+    LDR		r1, =SYSCFG_EXTICR2 // Set input line button s3
+    MOVS 	r2, #0xF000
+    LDR     r0, [r1, #0]        // get current value of EXTI
+    BICS    r0, r2              // delete bits
+    MOVS	r2, #0x1000
+    ORRS	r0, r0, r2
+	STR     r0, [r1, #0]
+
+#- configure lines in EXTI module (EXTI_* registers)
+	LDR     r1, =EXTI_IMR1 		//
     LDR     r2, =0x0081
 	LDR     r0, [r1, #0]        // get current value of EXTI
-	BICS    r0, r2              // delete bits
-	ORRS	r0, #1
+	ORRS	r0, r0, r2
+    STR     r0, [r1, #0]
+
+	LDR 	r1, =EXTI_FTSR1		//falling trigger
+    LDR     r2, =0x0081
+	LDR     r0, [r1, #0]        // get current value of EXTI
+	ORRS	r0, r0, r2
     STR     r0, [r1, #0]
 
 	LDR 	r1, =EXTI_RTSR1		//rising trigger
-	LDR		r2,	=0x0081
-	LDR	 	r0, [r1, #0]
-	BICS    r0, r2
-	STR     r0, [r1, #0]
+    LDR     r2, =0x0081
+	LDR     r0, [r1, #0]        // get current value of EXTI
+	BICS	r0, r2
+    STR     r0, [r1, #0]
 
-	LDR 	r1, =EXTI_FTSR1		//falling trigger
-	LDR		r2,	=0x0081
-	LDR	 	r0, [r1, #0]
-	BICS    r0, r2
-	ORRS	r0, #1
-	STR     r0, [r1, #0]
 
-    LDR		r1, =SYSCFG_EXTICR1
-    MOVS 	r2, #0xFC
-    LDR     r0, [r1, #0]        // get current value of EXTI
-    BICS    r0, r2              // delete bits
-    MOVS	r2, #0x1
-    ORRS	r0, r2
-	STR     r0, [r1, #0]
+#- NVIC: set interrupt priority, clear pending bits
+#  and enable interrupts for buttons (see: PM, ch. 4.2)
 
 	LDR		r1, =NVIC_ICPR0
     LDR 	r2, =0x00800040
@@ -182,32 +202,6 @@ init:
     ORRS	r0, r0, r2
 	STR     r0, [r1, #0]
 
-
-
-#- enable clock for SYSCFG module
-    LDR     r1, =RCC_APB2ENR    // load RCC APB2 peripheral clock enable register address
-    MOVS    r2, #0x01           // bit 0: SYSCFGCOMPEN --> SYSCFG + COMP clock enable
-    LDR     r0, [r1, #0]        // get current value
-    ORRS    r0, r0, r2          // set bit
-    STR     r0, [r1, #0]        // enable clock
-
-#- connect GPIO pins of the buttons to EXTended Interrupt controller lines (EXTI)
-#  in SYSCFG module (SYSCFG_* registers)
-
-    /* ... place your code here ... */
-
-
-#- configure lines in EXTI module (EXTI_* registers)
-
-    /* ... place your code here ... */
-
-
-#- NVIC: set interrupt priority, clear pending bits
-#  and enable interrupts for buttons (see: PM, ch. 4.2)
-
-    /* ... place your code here ... */
-
-
     CPSIE   i                   // enable interrupts globally
 
 
@@ -220,13 +214,6 @@ init:
     .global main
     .type   main, %function
 main:
-    LDR     r1, =GPIOA_ODR
-    EORS    r0, r0, r2
-    STR     r0, [r1, #0]
-
-    BL      delay
-
-    /* ... replace current code here ... */
 
     B       main
 
@@ -250,7 +237,7 @@ main:
     .type   delay, %function
 delay:
     MOVS    r6, #0              // ...
-    LDR     r7, =0x400000       // ...
+    LDR     r7, =0x31400       // ...
 .L1:
     ADDS    r6, r6, #1          // ...
     CMP     r6, r7              // ...
@@ -349,21 +336,32 @@ _hardf:
     .type   _exti0, %function
 _exti0:
     PUSH    {lr}                // save special content
-
 #--- do the work
+	BL		delay
+	LDR     r1, =GPIOB_IDR 		//Load input data register
+    LDR     r0,  [r1, #0]
+    MOV     r2, #0xFE			//mask S0
+    BICS    r0, r2				//delete bits
+    CMP     r0, #0x1			//check button off
+    IT      EQ
+    BEQ		clean
 
-    /* ... place your code here ... */
 	LDR     r1, =GPIOA_ODR
+	MOVS	r2, #0x3
+	LDR     r0, [r1, #0]
     EORS    r0, r0, r2
     STR     r0, [r1, #0]
+    clean:
+	BL		delay
 
 #--- clear interrupt flag
-
     LDR		r1, =EXTI_PR1
     MOVS	r2, #0x1
     LDR     r0, [r1, #0]
-    EORS	r0, r0, r2
+    ORRS	r0, r0, r2
     STR     r0, [r1, #0]
+
+
 
 #--- leave ISR
     POP     {r1}                // get special content back
@@ -378,22 +376,37 @@ _exti0:
     .type   _exti7, %function
 _exti7:
     PUSH    {lr}                // save special content
-
 #--- do the work
+	BL		delay
+	LDR     r1, =GPIOB_IDR 		//Load input data register
+    LDR     r0,  [r1, #0]
+    MOV     r2, #0x7F			//mask S3
+    BICS    r0, r2				//delete bits
+    LSR		r0, r0, #7			//shift value to pos. 0
+    CMP     r0, #0x1			//check button off
+    IT      EQ
+    BEQ		clean3
 
-    /* ... place your code here ... */
-
+	LDR     r1, =GPIOA_ODR
+	MOVS	r2, #0xC
+	LDR     r0, [r1, #0]
+    EORS    r0, r0, r2
+    STR     r0, [r1, #0]
+    clean3:
+	BL		delay
 
 #--- clear interrupt flag
+    LDR		r1, =EXTI_PR1
+    MOVS	r2, #0x1
+    LDR     r0, [r1, #0]
+    ORRS	r0, r0, r2
+    STR     r0, [r1, #0]
 
-    /* ... place your code here ... */
 
 
 #--- leave ISR
     POP     {r1}                // get special content back
     BX      r1                  // go back to where we came from
-
-
 #----------------------------------------------------------------------------------------#
 .lp2:           // this label is only to nicify the line up in the .lst file
     .ltorg
