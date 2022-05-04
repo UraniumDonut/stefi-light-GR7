@@ -52,6 +52,8 @@ int main(void)
     __disable_irq();        // disable interrupts globally
 
     GPIO_init();
+SysTick->
+    STK->CTRL |= 1;
 
     __enable_irq();         // enable interrupts globally
 
@@ -65,6 +67,7 @@ int main(void)
         /* ... add your code to implement the lab assignment ... */
 
         GPIOA->ODR ^= MASK_LED_RED;
+
     }
 
     return 1;
