@@ -928,288 +928,271 @@
  149 007a 1043     	    ORRS    r0, r0, r2          // set bit
  150 007c 0860     	    STR     r0, [r1, #0]        // enable clock
  151              	
- 152              	
- 153 007e 2249     	    LDR		r1, =SYSCFG_EXTICR1
- 154 0080 0F22     	    MOVS 	r2, #0xF
- 155 0082 0868     	    LDR     r0, [r1, #0]        // get current value of EXTI
- 156 0084 9043     	    BICS    r0, r2              // delete bits
- 157 0086 0122     	    MOVS	r2, #0x0001
- 158 0088 1043     	    ORRS	r0, r0, r2
- 159 008a 0860     		STR     r0, [r1, #0]
- 160              	
- 161 008c 1F49     	    LDR		r1, =SYSCFG_EXTICR2
- 162 008e 5FF47042 	    MOVS 	r2, #0xF000
- 163 0092 0868     	    LDR     r0, [r1, #0]        // get current value of EXTI
- 164 0094 9043     	    BICS    r0, r2              // delete bits
- 165 0096 5FF48052 	    MOVS	r2, #0x1000
- 166 009a 1043     	    ORRS	r0, r0, r2
- 167 009c 0860     		STR     r0, [r1, #0]
- 168              	
- 169 009e 1C49     		LDR     r1, =EXTI_IMR1
- 170 00a0 4FF08102 	    LDR     r2, =0x0081
- 171 00a4 0868     		LDR     r0, [r1, #0]        // get current value of EXTI
- 172 00a6 1043     		ORRS	r0, r0, r2
- 173 00a8 0860     	    STR     r0, [r1, #0]
- 174              	
- 175 00aa 1A49     		LDR 	r1, =EXTI_FTSR1		//falling trigger
- 176 00ac 4FF08102 	    LDR     r2, =0x0081
- 177 00b0 0868     		LDR     r0, [r1, #0]        // get current value of EXTI
- 178 00b2 1043     		ORRS	r0, r0, r2
- 179 00b4 0860     	    STR     r0, [r1, #0]
- 180              	
- 181 00b6 1849     		LDR 	r1, =EXTI_RTSR1		//rising trigger
- 182 00b8 4FF08102 	    LDR     r2, =0x0081
- 183 00bc 0868     		LDR     r0, [r1, #0]        // get current value of EXTI
- 184 00be 9043     		BICS	r0, r2
- 185 00c0 0860     	    STR     r0, [r1, #0]
- 186              	
- 187              	
- 188 00c2 1649     		LDR		r1, =NVIC_ICPR0
- 189 00c4 164A     	    LDR 	r2, =0x00800040
- 190 00c6 0868     	    LDR     r0, [r1, #0]        // get current value of EXTI
- 191 00c8 1043     	    ORRS	r0, r0, r2
- 192 00ca 0860     		STR     r0, [r1, #0]
- 193              	
- 194 00cc 1549     	    LDR		r1, =NVIC_ISER0
- 195 00ce 144A     	    LDR 	r2, =0x00800040
- 196 00d0 0868     	    LDR     r0, [r1, #0]        // get current value of EXTI
- 197 00d2 1043     	    ORRS	r0, r0, r2
- 198 00d4 0860     		STR     r0, [r1, #0]
- 199              	
- 200              	
- 201              	
- 202              	
- 203              	
+ 152              	#- connect GPIO pins of the buttons to EXTended Interrupt controller lines (EXTI)
+ 153              	#  in SYSCFG module (SYSCFG_* registers)
+ 154 007e 2249     	    LDR		r1, =SYSCFG_EXTICR1	// Set input line button s0
+ 155 0080 0F22     	    MOVS 	r2, #0xF
+ 156 0082 0868     	    LDR     r0, [r1, #0]
+ 157 0084 9043     	    BICS    r0, r2              // delete bits
+ 158 0086 0122     	    MOVS	r2, #0x0001
+ 159 0088 1043     	    ORRS	r0, r0, r2
+ 160 008a 0860     		STR     r0, [r1, #0]
+ 161              	
+ 162 008c 1F49     	    LDR		r1, =SYSCFG_EXTICR2 // Set input line button s3
+ 163 008e 5FF47042 	    MOVS 	r2, #0xF000
+ 164 0092 0868     	    LDR     r0, [r1, #0]
+ 165 0094 9043     	    BICS    r0, r2              // delete bits
+ 166 0096 5FF48052 	    MOVS	r2, #0x1000
+ 167 009a 1043     	    ORRS	r0, r0, r2
+ 168 009c 0860     		STR     r0, [r1, #0]
+ 169              	
+ 170              	#- configure lines in EXTI module (EXTI_* registers)
+ 171 009e 1C49     		LDR     r1, =EXTI_IMR1 		//Set interrupt mask for S0 and S3
+ 172 00a0 4FF08102 	    LDR     r2, =0x0081
+ 173 00a4 0868     		LDR     r0, [r1, #0]
+ 174 00a6 1043     		ORRS	r0, r0, r2
+ 175 00a8 0860     	    STR     r0, [r1, #0]
+ 176              	
+ 177 00aa 1A49     		LDR 	r1, =EXTI_FTSR1		//enable falling trigger for S0 and S3
+ 178 00ac 4FF08102 	    LDR     r2, =0x0081
+ 179 00b0 0868     		LDR     r0, [r1, #0]
+ 180 00b2 1043     		ORRS	r0, r0, r2
+ 181 00b4 0860     	    STR     r0, [r1, #0]
+ 182              	
+ 183 00b6 1849     		LDR 	r1, =EXTI_RTSR1		//disable rising trigger for S0 and S3
+ 184 00b8 4FF08102 	    LDR     r2, =0x0081
+ 185 00bc 0868     		LDR     r0, [r1, #0]
+ 186 00be 9043     		BICS	r0, r2
+ 187 00c0 0860     	    STR     r0, [r1, #0]
+ 188              	
+ 189              	
+ 190              	#- NVIC: set interrupt priority, clear pending bits
+ 191              	#  and enable interrupts for buttons (see: PM, ch. 4.2)
+ 192              	
+ 193 00c2 1649     		LDR		r1, =NVIC_ICPR0		//Clear pending interrupts for S0 and S3
+ 194 00c4 164A     	    LDR 	r2, =0x00800040
+ 195 00c6 0868     	    LDR     r0, [r1, #0]
+ 196 00c8 1043     	    ORRS	r0, r0, r2
+ 197 00ca 0860     		STR     r0, [r1, #0]
+ 198              	
+ 199 00cc 1549     	    LDR		r1, =NVIC_ISER0		//Enable interrupts for S0 and S3
+ 200 00ce 144A     	    LDR 	r2, =0x00800040
+ 201 00d0 0868     	    LDR     r0, [r1, #0]
+ 202 00d2 1043     	    ORRS	r0, r0, r2
+ 203 00d4 0860     		STR     r0, [r1, #0]
  204              	
- 205              	#- connect GPIO pins of the buttons to EXTended Interrupt controller lines (EXTI)
- 206              	#  in SYSCFG module (SYSCFG_* registers)
+ 205 00d6 62B6     	    CPSIE   i                   // enable interrupts globally
+ 206              	
  207              	
- 208              	    /* ... place your code here ... */
+ 208              	#----------------------------------------------------------------------------------------#
  209              	
- 210              	
- 211              	#- configure lines in EXTI module (EXTI_* registers)
- 212              	
- 213              	    /* ... place your code here ... */
- 214              	
- 215              	
- 216              	#- NVIC: set interrupt priority, clear pending bits
- 217              	#  and enable interrupts for buttons (see: PM, ch. 4.2)
- 218              	
- 219              	    /* ... place your code here ... */
+ 210              	    .align  2
+ 211              	    .syntax unified
+ 212              	    .thumb
+ 213              	    .thumb_func
+ 214              	    .global main
+ 216              	main:
+ 217              	
+ 218 00d8 FFF7FEBF 	    B       main	//loop forever
+ 219              	
  220              	
  221              	
- 222 00d6 62B6     	    CPSIE   i                   // enable interrupts globally
- 223              	
- 224              	
- 225              	#----------------------------------------------------------------------------------------#
- 226              	
- 227              	    .align  2
- 228              	    .syntax unified
- 229              	    .thumb
- 230              	    .thumb_func
- 231              	    .global main
- 233              	main:
- 234              	
- 235 00d8 FFF7FEBF 	    B       main
- 236              	
- 237              	
- 238              	
- 239              	#----------------------------------------------------------------------------------------#
- 240              	    .align  2
- 241              	    .syntax unified
- 242              	    .thumb
- 243              	    .thumb_func
- 244              	    .global todoleft
+ 222              	#----------------------------------------------------------------------------------------#
+ 223              	    .align  2
+ 224              	    .syntax unified
+ 225              	    .thumb
+ 226              	    .thumb_func
+ 227              	    .global todoleft
+ 229              	
+ 230              	#----------------------------------------------------------------------------------------#
+ 231              	
+ 232              	    .align  2
+ 233              	    .syntax unified
+ 234              	    .thumb
+ 235              	    .thumb_func
+ 236              	    .global delay
+ 238              	delay:
+ 239 00dc 0026     	    MOVS    r6, #0              // ...
+ 240 00de 4FF44537 	    LDR     r7, =0x31400       // ...
+ 241              	.L1:
+ 242 00e2 0136     	    ADDS    r6, r6, #1          // ...
+ 243 00e4 BE42     	    CMP     r6, r7              // ...
+ 244 00e6 FCD1     	    BNE     .L1                 // ...
+ 245 00e8 7047     	    BX      lr                  // ...
  246              	
- 247              	#----------------------------------------------------------------------------------------#
- 248              	
- 249              	    .align  2
- 250              	    .syntax unified
- 251              	    .thumb
- 252              	    .thumb_func
- 253              	    .global delay
- 255              	delay:
- 256 00dc 0026     	    MOVS    r6, #0              // ...
- 257 00de 4FF44537 	    LDR     r7, =0x31400       // ...
- 258              	.L1:
- 259 00e2 0136     	    ADDS    r6, r6, #1          // ...
- 260 00e4 BE42     	    CMP     r6, r7              // ...
- 261 00e6 FCD1     	    BNE     .L1                 // ...
- 262 00e8 7047     	    BX      lr                  // ...
- 263              	
- 264              	
+ 247              	
+ 248              	#----------------------------------------------------------------------------------------#
+ 249              	
+ 250 00ea 00BF     	    .align 2
+ 251              	    .global stop
+ 252              	stop:
+ 253 00ec 00BF     	    NOP                         // do nothing (NOP is here to avoid a debugger crash, only)
+ 254 00ee FFF7FEBF 	    B       stop                // if this line is reached, something went wrong
+ 255              	
+ 256              	
+ 257              	#----------------------------------------------------------------------------------------#
+ 258              	.lp1:           // this label is only to nicify the line up in the .lst file
+ 259 00f2 00004C10 	    .ltorg
+ 259      02401400 
+ 259      00480004 
+ 259      00480C04 
+ 259      00486010 
+ 260              	#----------------------------------------------------------------------------------------#
+ 261              	
+ 262              	
+ 263              	#----------------------------------------------------------------------------------------#
+ 264              	    .section .exhand,"ax"       // section for exception handlers
  265              	#----------------------------------------------------------------------------------------#
  266              	
- 267 00ea 00BF     	    .align 2
- 268              	    .global stop
- 269              	stop:
- 270 00ec 00BF     	    NOP                         // do nothing (NOP is here to avoid a debugger crash, only)
- 271 00ee FFF7FEBF 	    B       stop                // if this line is reached, something went wrong
- 272              	
- 273              	
- 274              	#----------------------------------------------------------------------------------------#
- 275              	.lp1:           // this label is only to nicify the line up in the .lst file
- 276 00f2 00004C10 	    .ltorg
- 276      02401400 
- 276      00480004 
- 276      00480C04 
- 276      00486010 
- 277              	#----------------------------------------------------------------------------------------#
+ 267              	    .align  2
+ 268              	    .syntax unified
+ 269              	    .thumb
+ 271              	_nmi:
+ 272              	#--- enable clock
+ 273 0000 2E49     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
+ 274 0002 4FF00102 	    MOV     r2, #0x01           // load mask
+ 275 0006 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
+ 276 0008 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
+ 277 000a 0860     	    STR     r0, [r1, #0]        // apply settings
  278              	
- 279              	
- 280              	#----------------------------------------------------------------------------------------#
- 281              	    .section .exhand,"ax"       // section for exception handlers
- 282              	#----------------------------------------------------------------------------------------#
- 283              	
- 284              	    .align  2
- 285              	    .syntax unified
- 286              	    .thumb
- 288              	_nmi:
- 289              	#--- enable clock
- 290 0000 2E49     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
- 291 0002 4FF00102 	    MOV     r2, #0x01           // load mask
- 292 0006 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
- 293 0008 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
- 294 000a 0860     	    STR     r0, [r1, #0]        // apply settings
- 295              	
- 296              	#--- init pins
- 297 000c 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
- 298 0010 FF22     	    MOVS    r2, #0xFF           // prepare mask
- 299 0012 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
- 300 0014 9043     	    BICS    r0, r0, r2          // delete bits
- 301 0016 4422     	    MOVS    r2, #0x44           // load configuration mask
- 302 0018 1043     	    ORRS    r0, r0, r2          // configure pins
- 303 001a 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
- 304              	
- 305              	#--- switch some LEDs on
- 306 001c 2849     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
- 307 001e 0A22     	    MOVS    r2, #0x0A           // load mask for blue and yellow LED
- 308 0020 0868     	    LDR     r0, [r1, #0]
- 309 0022 9043     	    BICS    r0, r0, r2
- 310 0024 0860     	    STR     r0, [r1, #0]        // switch LEDs on
+ 279              	#--- init pins
+ 280 000c 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
+ 281 0010 FF22     	    MOVS    r2, #0xFF           // prepare mask
+ 282 0012 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 283 0014 9043     	    BICS    r0, r0, r2          // delete bits
+ 284 0016 4422     	    MOVS    r2, #0x44           // load configuration mask
+ 285 0018 1043     	    ORRS    r0, r0, r2          // configure pins
+ 286 001a 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
+ 287              	
+ 288              	#--- switch some LEDs on
+ 289 001c 2849     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
+ 290 001e 0A22     	    MOVS    r2, #0x0A           // load mask for blue and yellow LED
+ 291 0020 0868     	    LDR     r0, [r1, #0]
+ 292 0022 9043     	    BICS    r0, r0, r2
+ 293 0024 0860     	    STR     r0, [r1, #0]        // switch LEDs on
+ 294              	
+ 295 0026 EBE7     	    B   _nmi
+ 296              	
+ 297              	
+ 298              	#----------------------------------------------------------------------------------------#
+ 299              	
+ 300              	    .align  2
+ 301              	    .syntax unified
+ 302              	    .thumb
+ 304              	_hardf:
+ 305              	#--- enable clock
+ 306 0028 2449     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
+ 307 002a 4FF00102 	    MOV     r2, #0x01           // load mask
+ 308 002e 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
+ 309 0030 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
+ 310 0032 0860     	    STR     r0, [r1, #0]        // apply settings
  311              	
- 312 0026 EBE7     	    B   _nmi
- 313              	
- 314              	
- 315              	#----------------------------------------------------------------------------------------#
- 316              	
- 317              	    .align  2
- 318              	    .syntax unified
- 319              	    .thumb
- 321              	_hardf:
- 322              	#--- enable clock
- 323 0028 2449     	    LDR     r1, =RCC_AHB2ENR    // load address of RCC_AHB2ENR
- 324 002a 4FF00102 	    MOV     r2, #0x01           // load mask
- 325 002e 0868     	    LDR     r0, [r1, #0]        // get current value of RCC_AHB2ENR
- 326 0030 1043     	    ORRS    r0, r0, r2          // configure clock gating for port
- 327 0032 0860     	    STR     r0, [r1, #0]        // apply settings
- 328              	
- 329              	#--- init pins
- 330 0034 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
- 331 0038 FF22     	    MOVS    r2, #0xFF           // prepare mask
- 332 003a 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
- 333 003c 9043     	    BICS    r0, r0, r2          // delete bits
- 334 003e 1122     	    MOVS    r2, #0x11           // load configuration mask
- 335 0040 1043     	    ORRS    r0, r0, r2          // configure pins
- 336 0042 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
- 337              	
- 338              	#--- switch some LEDs on
- 339 0044 1E49     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
- 340 0046 0522     	    MOVS    r2, #0x05           // load mask for red and green LED
- 341 0048 0868     	    LDR     r0, [r1, #0]
- 342 004a 9043     	    BICS    r0, r0, r2
- 343 004c 0860     	    STR     r0, [r1, #0]        // switch LEDs on
- 344              	
- 345 004e EBE7     	    B       _hardf
- 346              	
- 347              	
- 348              	#----------------------------------------------------------------------------------------#
- 349              	
- 350              	    .align  2
- 351              	    .syntax unified
- 352              	    .thumb
- 354              	_exti0:
- 355 0050 00B5     	    PUSH    {lr}                // save special content
- 356              	#--- do the work
- 357 0052 FFF7FEFF 		BL		delay
- 358 0056 1B49     		LDR     r1, =GPIOB_IDR 		//Load input data register
- 359 0058 0868     	    LDR     r0,  [r1, #0]
- 360 005a 4FF0FE02 	    MOV     r2, #0xFE			//mask S0
- 361 005e 9043     	    BICS    r0, r2				//delete bits
- 362 0060 0128     	    CMP     r0, #0x1			//check button off
- 363 0062 08BF     	    IT      EQ
- 364 0064 04E0     	    BEQ		clean
+ 312              	#--- init pins
+ 313 0034 4FF09041 	    LDR     r1, =GPIOA_MODER    // load port A mode register address
+ 314 0038 FF22     	    MOVS    r2, #0xFF           // prepare mask
+ 315 003a 0868     	    LDR     r0, [r1, #0]        // get current value of port A mode register
+ 316 003c 9043     	    BICS    r0, r0, r2          // delete bits
+ 317 003e 1122     	    MOVS    r2, #0x11           // load configuration mask
+ 318 0040 1043     	    ORRS    r0, r0, r2          // configure pins
+ 319 0042 0860     	    STR     r0, [r1, #0]        // apply settings to port A mode register
+ 320              	
+ 321              	#--- switch some LEDs on
+ 322 0044 1E49     	    LDR     r1, =GPIOA_ODR      // load port A data output register address
+ 323 0046 0522     	    MOVS    r2, #0x05           // load mask for red and green LED
+ 324 0048 0868     	    LDR     r0, [r1, #0]
+ 325 004a 9043     	    BICS    r0, r0, r2
+ 326 004c 0860     	    STR     r0, [r1, #0]        // switch LEDs on
+ 327              	
+ 328 004e EBE7     	    B       _hardf
+ 329              	
+ 330              	
+ 331              	#----------------------------------------------------------------------------------------#
+ 332              	
+ 333              	    .align  2
+ 334              	    .syntax unified
+ 335              	    .thumb
+ 337              	_exti0:
+ 338 0050 00B5     	    PUSH    {lr}                // save special content
+ 339              	#--- do the work
+ 340 0052 FFF7FEFF 		BL		delay				//delay for debounce
+ 341 0056 1B49     		LDR     r1, =GPIOB_IDR 		//Load input data register
+ 342 0058 0868     	    LDR     r0,  [r1, #0]
+ 343 005a 4FF0FE02 	    MOV     r2, #0xFE			//mask S0
+ 344 005e 9043     	    BICS    r0, r2				//delete bits
+ 345 0060 0128     	    CMP     r0, #0x1			//check button off
+ 346 0062 08BF     	    IT      EQ					//if button off
+ 347 0064 04E0     	    BEQ		clean				//skip LED toggle
+ 348              	
+ 349 0066 1649     		LDR     r1, =GPIOA_ODR		//Load LED GPIO register
+ 350 0068 0322     		MOVS	r2, #0x3			//Mask LED0, LED1
+ 351 006a 0868     		LDR     r0, [r1, #0]
+ 352 006c 5040     	    EORS    r0, r0, r2			//toggle LEDs
+ 353 006e 0860     	    STR     r0, [r1, #0]		//write changes
+ 354              	    clean:
+ 355 0070 FFF7FEFF 		BL		delay				//delay for debounce
+ 356              	
+ 357              	#--- clear interrupt flag
+ 358 0074 1449     	    LDR		r1, =EXTI_PR1		//Load pending interrupt register
+ 359 0076 0122     	    MOVS	r2, #0x1
+ 360 0078 0868     	    LDR     r0, [r1, #0]
+ 361 007a 1043     	    ORRS	r0, r0, r2
+ 362 007c 0860     	    STR     r0, [r1, #0]
+ 363              	
+ 364              	
  365              	
- 366 0066 1649     		LDR     r1, =GPIOA_ODR
- 367 0068 0322     		MOVS	r2, #0x3
- 368 006a 0868     		LDR     r0, [r1, #0]
- 369 006c 5040     	    EORS    r0, r0, r2
- 370 006e 0860     	    STR     r0, [r1, #0]
- 371              	    clean:
- 372 0070 FFF7FEFF 		BL		delay
- 373              	
- 374              	#--- clear interrupt flag
- 375 0074 1449     	    LDR		r1, =EXTI_PR1
- 376 0076 0122     	    MOVS	r2, #0x1
- 377 0078 0868     	    LDR     r0, [r1, #0]
- 378 007a 1043     	    ORRS	r0, r0, r2
- 379 007c 0860     	    STR     r0, [r1, #0]
- 380              	
- 381              	
- 382              	
- 383              	#--- leave ISR
- 384 007e 02BC     	    POP     {r1}                // get special content back
- 385 0080 0847     	    BX      r1                  // go back to where we came from
- 386              	
- 387              	
- 388              	#----------------------------------------------------------------------------------------#
+ 366              	#--- leave ISR
+ 367 007e 02BC     	    POP     {r1}                // get special content back
+ 368 0080 0847     	    BX      r1                  // go back to where we came from
+ 369              	
+ 370              	
+ 371              	#----------------------------------------------------------------------------------------#
+ 372              	
+ 373 0082 00BF     	    .align  2
+ 374              	    .syntax unified
+ 375              	    .thumb
+ 377              	_exti7:
+ 378 0084 00B5     	    PUSH    {lr}                // save special content
+ 379              	#--- do the work
+ 380 0086 FFF7FEFF 		BL		delay				//delay for debounce
+ 381 008a 0E49     		LDR     r1, =GPIOB_IDR 		//Load input data register
+ 382 008c 0868     	    LDR     r0,  [r1, #0]
+ 383 008e 4FF07F02 	    MOV     r2, #0x7F			//mask S3
+ 384 0092 9043     	    BICS    r0, r2				//delete bits
+ 385 0094 4FEAD010 	    LSR		r0, r0, #7			//shift value to pos. 0
+ 386 0098 0128     	    CMP     r0, #0x1			//check button off
+ 387 009a 08BF     	    IT      EQ					//if button off
+ 388 009c 04E0     	    BEQ		clean3				//skip LED toggle
  389              	
- 390 0082 00BF     	    .align  2
- 391              	    .syntax unified
- 392              	    .thumb
- 394              	_exti7:
- 395 0084 00B5     	    PUSH    {lr}                // save special content
- 396              	#--- do the work
- 397 0086 FFF7FEFF 		BL		delay
- 398 008a 0E49     		LDR     r1, =GPIOB_IDR 		//Load input data register
- 399 008c 0868     	    LDR     r0,  [r1, #0]
- 400 008e 4FF07F02 	    MOV     r2, #0x7F			//mask S3
- 401 0092 9043     	    BICS    r0, r2				//delete bits
- 402 0094 4FEAD010 	    LSR		r0, r0, #7			//shift value to pos. 0
- 403 0098 0128     	    CMP     r0, #0x1			//check button off
- 404 009a 08BF     	    IT      EQ
- 405 009c 04E0     	    BEQ		clean3
+ 390 009e 0849     		LDR     r1, =GPIOA_ODR		//Load LED GPIO register
+ 391 00a0 0C22     		MOVS	r2, #0xC			//Mask LED0, LED1
+ 392 00a2 0868     		LDR     r0, [r1, #0]
+ 393 00a4 5040     	    EORS    r0, r0, r2			//toggle LEDs
+ 394 00a6 0860     	    STR     r0, [r1, #0]		//write changes
+ 395              	    clean3:
+ 396 00a8 FFF7FEFF 		BL		delay				//delay for debounce
+ 397              	
+ 398              	#--- clear interrupt flag
+ 399 00ac 0649     	    LDR		r1, =EXTI_PR1		//Load pending interrupt register
+ 400 00ae 0122     	    MOVS	r2, #0x1
+ 401 00b0 0868     	    LDR     r0, [r1, #0]
+ 402 00b2 1043     	    ORRS	r0, r0, r2
+ 403 00b4 0860     	    STR     r0, [r1, #0]
+ 404              	
+ 405              	
  406              	
- 407 009e 0849     		LDR     r1, =GPIOA_ODR
- 408 00a0 0C22     		MOVS	r2, #0xC
- 409 00a2 0868     		LDR     r0, [r1, #0]
- 410 00a4 5040     	    EORS    r0, r0, r2
- 411 00a6 0860     	    STR     r0, [r1, #0]
- 412              	    clean3:
- 413 00a8 FFF7FEFF 		BL		delay
+ 407              	#--- leave ISR
+ 408 00b6 02BC     	    POP     {r1}                // get special content back
+ 409 00b8 0847     	    BX      r1                  // go back to where we came from
+ 410              	#----------------------------------------------------------------------------------------#
+ 411              	.lp2:           // this label is only to nicify the line up in the .lst file
+ 412 00ba 00004C10 	    .ltorg
+ 412      02401400 
+ 412      00481004 
+ 412      00481404 
+ 412      0140
+ 413              	#----------------------------------------------------------------------------------------#
  414              	
- 415              	#--- clear interrupt flag
- 416 00ac 0649     	    LDR		r1, =EXTI_PR1
- 417 00ae 0122     	    MOVS	r2, #0x1
- 418 00b0 0868     	    LDR     r0, [r1, #0]
- 419 00b2 1043     	    ORRS	r0, r0, r2
- 420 00b4 0860     	    STR     r0, [r1, #0]
- 421              	
- 422              	
- 423              	
- 424              	#--- leave ISR
- 425 00b6 02BC     	    POP     {r1}                // get special content back
- 426 00b8 0847     	    BX      r1                  // go back to where we came from
- 427              	#----------------------------------------------------------------------------------------#
- 428              	.lp2:           // this label is only to nicify the line up in the .lst file
- 429 00ba 00004C10 	    .ltorg
- 429      02401400 
- 429      00481004 
- 429      00481404 
- 429      0140
- 430              	#----------------------------------------------------------------------------------------#
- 431              	
- 432              	    .end
+ 415              	    .end
 DEFINED SYMBOLS
          G431_addr.s:39     *ABS*:0000000040000000 APB1_BASE
          G431_addr.s:40     *ABS*:0000000040010000 APB2_BASE
@@ -1719,24 +1702,24 @@ DEFINED SYMBOLS
          G431_addr.s:763    *ABS*:00000000e004200c DBGMCU_APB1FZR2
          G431_addr.s:764    *ABS*:00000000e0042010 DBGMCU_APB2DZR
              task3.s:46     .vectortable:0000000000000000 $d
-             task3.s:288    .exhand:0000000000000000 _nmi
-             task3.s:321    .exhand:0000000000000028 _hardf
-             task3.s:354    .exhand:0000000000000050 _exti0
-             task3.s:394    .exhand:0000000000000084 _exti7
+             task3.s:271    .exhand:0000000000000000 _nmi
+             task3.s:304    .exhand:0000000000000028 _hardf
+             task3.s:337    .exhand:0000000000000050 _exti0
+             task3.s:377    .exhand:0000000000000084 _exti7
              task3.s:68     .text:0000000000000000 $t
              task3.s:74     .text:0000000000000000 init
-             task3.s:233    .text:00000000000000d8 main
-             task3.s:255    .text:00000000000000dc delay
-             task3.s:269    .text:00000000000000ec stop
-             task3.s:275    .text:00000000000000f2 .lp1
-             task3.s:276    .text:00000000000000f2 $d
-             task3.s:276    .text:00000000000000f4 $d
-             task3.s:284    .exhand:0000000000000000 $t
-             task3.s:371    .exhand:0000000000000070 clean
-             task3.s:412    .exhand:00000000000000a8 clean3
-             task3.s:428    .exhand:00000000000000ba .lp2
-             task3.s:429    .exhand:00000000000000ba $d
-             task3.s:429    .exhand:00000000000000bc $d
+             task3.s:216    .text:00000000000000d8 main
+             task3.s:238    .text:00000000000000dc delay
+             task3.s:252    .text:00000000000000ec stop
+             task3.s:258    .text:00000000000000f2 .lp1
+             task3.s:259    .text:00000000000000f2 $d
+             task3.s:259    .text:00000000000000f4 $d
+             task3.s:267    .exhand:0000000000000000 $t
+             task3.s:354    .exhand:0000000000000070 clean
+             task3.s:395    .exhand:00000000000000a8 clean3
+             task3.s:411    .exhand:00000000000000ba .lp2
+             task3.s:412    .exhand:00000000000000ba $d
+             task3.s:412    .exhand:00000000000000bc $d
 
 UNDEFINED SYMBOLS
 todoleft

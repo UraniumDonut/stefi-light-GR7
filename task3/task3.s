@@ -153,7 +153,7 @@ init:
 #  in SYSCFG module (SYSCFG_* registers)
     LDR		r1, =SYSCFG_EXTICR1	// Set input line button s0
     MOVS 	r2, #0xF
-    LDR     r0, [r1, #0]        // get current value of EXTI
+    LDR     r0, [r1, #0]
     BICS    r0, r2              // delete bits
     MOVS	r2, #0x0001
     ORRS	r0, r0, r2
@@ -161,28 +161,28 @@ init:
 
     LDR		r1, =SYSCFG_EXTICR2 // Set input line button s3
     MOVS 	r2, #0xF000
-    LDR     r0, [r1, #0]        // get current value of EXTI
+    LDR     r0, [r1, #0]
     BICS    r0, r2              // delete bits
     MOVS	r2, #0x1000
     ORRS	r0, r0, r2
 	STR     r0, [r1, #0]
 
 #- configure lines in EXTI module (EXTI_* registers)
-	LDR     r1, =EXTI_IMR1 		//
+	LDR     r1, =EXTI_IMR1 		//Set interrupt mask for S0 and S3
     LDR     r2, =0x0081
-	LDR     r0, [r1, #0]        // get current value of EXTI
+	LDR     r0, [r1, #0]
 	ORRS	r0, r0, r2
     STR     r0, [r1, #0]
 
-	LDR 	r1, =EXTI_FTSR1		//falling trigger
+	LDR 	r1, =EXTI_FTSR1		//enable falling trigger for S0 and S3
     LDR     r2, =0x0081
-	LDR     r0, [r1, #0]        // get current value of EXTI
+	LDR     r0, [r1, #0]
 	ORRS	r0, r0, r2
     STR     r0, [r1, #0]
 
-	LDR 	r1, =EXTI_RTSR1		//rising trigger
+	LDR 	r1, =EXTI_RTSR1		//disable rising trigger for S0 and S3
     LDR     r2, =0x0081
-	LDR     r0, [r1, #0]        // get current value of EXTI
+	LDR     r0, [r1, #0]
 	BICS	r0, r2
     STR     r0, [r1, #0]
 
@@ -190,15 +190,15 @@ init:
 #- NVIC: set interrupt priority, clear pending bits
 #  and enable interrupts for buttons (see: PM, ch. 4.2)
 
-	LDR		r1, =NVIC_ICPR0
+	LDR		r1, =NVIC_ICPR0		//Clear pending interrupts for S0 and S3
     LDR 	r2, =0x00800040
-    LDR     r0, [r1, #0]        // get current value of EXTI
+    LDR     r0, [r1, #0]
     ORRS	r0, r0, r2
 	STR     r0, [r1, #0]
 
-    LDR		r1, =NVIC_ISER0
+    LDR		r1, =NVIC_ISER0		//Enable interrupts for S0 and S3
     LDR 	r2, =0x00800040
-    LDR     r0, [r1, #0]        // get current value of EXTI
+    LDR     r0, [r1, #0]
     ORRS	r0, r0, r2
 	STR     r0, [r1, #0]
 
@@ -215,7 +215,7 @@ init:
     .type   main, %function
 main:
 
-    B       main
+    B       main	//loop forever
 
 
 
@@ -337,25 +337,25 @@ _hardf:
 _exti0:
     PUSH    {lr}                // save special content
 #--- do the work
-	BL		delay
+	BL		delay				//delay for debounce
 	LDR     r1, =GPIOB_IDR 		//Load input data register
     LDR     r0,  [r1, #0]
     MOV     r2, #0xFE			//mask S0
     BICS    r0, r2				//delete bits
     CMP     r0, #0x1			//check button off
-    IT      EQ
-    BEQ		clean
+    IT      EQ					//if button off
+    BEQ		clean				//skip LED toggle
 
-	LDR     r1, =GPIOA_ODR
-	MOVS	r2, #0x3
+	LDR     r1, =GPIOA_ODR		//Load LED GPIO register
+	MOVS	r2, #0x3			//Mask LED0, LED1
 	LDR     r0, [r1, #0]
-    EORS    r0, r0, r2
-    STR     r0, [r1, #0]
+    EORS    r0, r0, r2			//toggle LEDs
+    STR     r0, [r1, #0]		//write changes
     clean:
-	BL		delay
+	BL		delay				//delay for debounce
 
 #--- clear interrupt flag
-    LDR		r1, =EXTI_PR1
+    LDR		r1, =EXTI_PR1		//Load pending interrupt register
     MOVS	r2, #0x1
     LDR     r0, [r1, #0]
     ORRS	r0, r0, r2
@@ -377,26 +377,26 @@ _exti0:
 _exti7:
     PUSH    {lr}                // save special content
 #--- do the work
-	BL		delay
+	BL		delay				//delay for debounce
 	LDR     r1, =GPIOB_IDR 		//Load input data register
     LDR     r0,  [r1, #0]
     MOV     r2, #0x7F			//mask S3
     BICS    r0, r2				//delete bits
     LSR		r0, r0, #7			//shift value to pos. 0
     CMP     r0, #0x1			//check button off
-    IT      EQ
-    BEQ		clean3
+    IT      EQ					//if button off
+    BEQ		clean3				//skip LED toggle
 
-	LDR     r1, =GPIOA_ODR
-	MOVS	r2, #0xC
+	LDR     r1, =GPIOA_ODR		//Load LED GPIO register
+	MOVS	r2, #0xC			//Mask LED0, LED1
 	LDR     r0, [r1, #0]
-    EORS    r0, r0, r2
-    STR     r0, [r1, #0]
+    EORS    r0, r0, r2			//toggle LEDs
+    STR     r0, [r1, #0]		//write changes
     clean3:
-	BL		delay
+	BL		delay				//delay for debounce
 
 #--- clear interrupt flag
-    LDR		r1, =EXTI_PR1
+    LDR		r1, =EXTI_PR1		//Load pending interrupt register
     MOVS	r2, #0x1
     LDR     r0, [r1, #0]
     ORRS	r0, r0, r2

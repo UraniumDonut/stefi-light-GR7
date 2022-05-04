@@ -64,8 +64,8 @@ LOAD linker stubs
  .ARM.attributes
                 0x0000000000000000       0x21 task3.o
 
-.debug_line     0x0000000000000000      0x131
- .debug_line    0x0000000000000000      0x131 task3.o
+.debug_line     0x0000000000000000      0x133
+ .debug_line    0x0000000000000000      0x133 task3.o
 
 .debug_info     0x0000000000000000       0x22
  .debug_info    0x0000000000000000       0x22 task3.o
