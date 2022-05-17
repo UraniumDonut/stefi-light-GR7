@@ -90,6 +90,11 @@ void ISR_default(void)
 }
 
 
+void button1(void){
+
+
+}
+
 /* ------------------------------------------------------------------------------------ *\
  * method:  void ISR_sysTick(void)
  *
@@ -109,15 +114,25 @@ void ISR_sysTick(void)
 /* --- ISR template: --- */
 
 /* ------------------------------------------------------------------------------------ *\
- * method:  void ISR_...(void)
+ * method:  void ISR_4(void)
  *
- * Interrupt handler for ...
+ * Interrupt handler for  4.
 \* ------------------------------------------------------------------------------------ */
-// void ISR_...(void)
-// {
-//
-//     /* ... place your code here ... */
-// }
+ void ISR_4(void)
+ {
+     //toggle led 1
+        GPIOA->ODR ^= MASK_LED_RED;
+    //reset interrupt
+     EXTI->PR1 |= 0x1; 
+    
+ }
+
+ void ISR_5(void)
+ {
+     //toggle led 1
+        GPIOA->ODR ^= MASK_LED_RED;
+
+ }
 
 
 /* ------------------------------------ INTERRUPT VECTOR TABLE ------------------------ */
@@ -149,11 +164,11 @@ void (* const paIsrFunc[118])(void) =
 	ISR_default,            /*   3 (0x0000004C)  RTC Wakeup timer through EXTI line 20 interrupt */
 	ISR_default,            /*   4 (0x00000050)  Flash global interrupt */
 	ISR_default,            /*   5 (0x00000054)  RCC global interrupt */
-	ISR_default,            /*   6 (0x00000058)  EXTI Line 0 interrupt */
+	button1,                /*   6 (0x00000058)  EXTI Line 0 interrupt */
 	ISR_default,            /*   7 (0x0000005C)  EXTI Line 1 interrupt */
 	ISR_default,            /*   8 (0x00000060)  EXTI Line 2 interrupt */
 	ISR_default,            /*   9 (0x00000064)  EXTI Line 3 interrupt */
-	ISR_default,            /*  10 (0x00000068)  EXTI Line 4 interrupt */
+	ISR_4,                  /*  10 (0x00000068)  EXTI Line 4 interrupt */
 	ISR_default,            /*  11 (0x0000006C)  DMA1 channel 1 interrupt */
 	ISR_default,            /*  12 (0x00000070)  DMA1 channel 2 interrupt */
 	ISR_default,            /*  13 (0x00000074)  DMA1 channel 3 interrupt */
@@ -166,7 +181,7 @@ void (* const paIsrFunc[118])(void) =
 	ISR_default,            /*  20 (0x00000090)  USB low priority interrupts */
 	ISR_default,            /*  21 (0x00000094)  FDCAN1 interrupt 0 */
 	ISR_default,            /*  22 (0x00000098)  FDCAN1 interrupt 1 */
-	ISR_default,            /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
+	ISR_5,                  /*  23 (0x0000009C)  EXTI line [9:5] interrupts */
 	ISR_default,            /*  24 (0x000000A0)  TIM1 break + TIM15 global interrupts */
 	ISR_default,            /*  25 (0x000000A4)  TIM1 update + TIM16 global interrupts */
 	ISR_default,            /*  26 (0x000000A8)  TIM1 trigger, commutation, direction change, index  + TIM17 interrupts */

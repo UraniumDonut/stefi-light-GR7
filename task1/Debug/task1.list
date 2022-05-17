@@ -79,205 +79,141 @@ Disassembly of section .text:
  8000214:	080006d0 	.word	0x080006d0
 
 08000218 <main>:
-int read2(void);
-void statecheck(void);
-
-/* ------------------------------------ M A I N --------------------------------------- */
-int main(void)
-{
  8000218:	b580      	push	{r7, lr}
  800021a:	af00      	add	r7, sp, #0
-  \details Disables IRQ interrupts by setting the I-bit in the CPSR.
-           Can only be executed in Privileged modes.
- */
-__STATIC_FORCEINLINE void __disable_irq(void)
-{
-  __ASM volatile ("cpsid i" : : : "memory");
  800021c:	b672      	cpsid	i
-}
  800021e:	bf00      	nop
-    /* --- initialization --- */
-    __disable_irq();        // disable interrupts globally
-
-    GPIO_init();
  8000220:	f000 f8f2 	bl	8000408 <GPIO_init>
-  __ASM volatile ("cpsie i" : : : "memory");
  8000224:	b662      	cpsie	i
-}
  8000226:	bf00      	nop
-
-
-    /* --- infinite processing loop --- */
-    while (1)
-    {
-    	if(shouldbeon){
  8000228:	4b04      	ldr	r3, [pc, #16]	; (800023c <main+0x24>)
  800022a:	681b      	ldr	r3, [r3, #0]
  800022c:	2b00      	cmp	r3, #0
  800022e:	d001      	beq.n	8000234 <main+0x1c>
-    		lauflicht();		//run the lights if shey should be running
  8000230:	f000 f806 	bl	8000240 <lauflicht>
-    	}
-    	statecheck();
  8000234:	f000 f8b8 	bl	80003a8 <statecheck>
-    	if(shouldbeon){
  8000238:	e7f6      	b.n	8000228 <main+0x10>
  800023a:	bf00      	nop
  800023c:	20000020 	.word	0x20000020
 
 08000240 <lauflicht>:
-}
-
-
-
-/* ------------------------------------ GLOBAL FUNCTIONS ------------------------------ */
-int lauflicht(void){
  8000240:	b580      	push	{r7, lr}
  8000242:	af00      	add	r7, sp, #0
-	GPIOA->ODR ^= MASK_LED_RED; 		//LED on
  8000244:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000248:	695b      	ldr	r3, [r3, #20]
  800024a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800024e:	f083 0301 	eor.w	r3, r3, #1
  8000252:	6153      	str	r3, [r2, #20]
-	delayws(WAITTIME);					//Wait and poll Button
  8000254:	f240 209a 	movw	r0, #666	; 0x29a
  8000258:	f000 f982 	bl	8000560 <delayws>
-	GPIOA->ODR ^= MASK_LED_RED;			//LED on
  800025c:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000260:	695b      	ldr	r3, [r3, #20]
  8000262:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  8000266:	f083 0301 	eor.w	r3, r3, #1
  800026a:	6153      	str	r3, [r2, #20]
-	if(!shouldbeon){return 1;}			//Check if lights should be running
  800026c:	4b42      	ldr	r3, [pc, #264]	; (8000378 <lauflicht+0x138>)
  800026e:	681b      	ldr	r3, [r3, #0]
  8000270:	2b00      	cmp	r3, #0
  8000272:	d101      	bne.n	8000278 <lauflicht+0x38>
  8000274:	2301      	movs	r3, #1
  8000276:	e07c      	b.n	8000372 <lauflicht+0x132>
-	GPIOA->ODR ^= MASK_LED_YELLOW;		//...
  8000278:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  800027c:	695b      	ldr	r3, [r3, #20]
  800027e:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  8000282:	f083 0302 	eor.w	r3, r3, #2
  8000286:	6153      	str	r3, [r2, #20]
-	delayws(WAITTIME);
  8000288:	f240 209a 	movw	r0, #666	; 0x29a
  800028c:	f000 f968 	bl	8000560 <delayws>
-	GPIOA->ODR ^= MASK_LED_YELLOW;
  8000290:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000294:	695b      	ldr	r3, [r3, #20]
  8000296:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800029a:	f083 0302 	eor.w	r3, r3, #2
  800029e:	6153      	str	r3, [r2, #20]
-	if(!shouldbeon){return 1;}
  80002a0:	4b35      	ldr	r3, [pc, #212]	; (8000378 <lauflicht+0x138>)
  80002a2:	681b      	ldr	r3, [r3, #0]
  80002a4:	2b00      	cmp	r3, #0
  80002a6:	d101      	bne.n	80002ac <lauflicht+0x6c>
  80002a8:	2301      	movs	r3, #1
  80002aa:	e062      	b.n	8000372 <lauflicht+0x132>
-	GPIOA->ODR ^= MASK_LED_GREEN;
  80002ac:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80002b0:	695b      	ldr	r3, [r3, #20]
  80002b2:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80002b6:	f083 0304 	eor.w	r3, r3, #4
  80002ba:	6153      	str	r3, [r2, #20]
-	delayws(WAITTIME);
  80002bc:	f240 209a 	movw	r0, #666	; 0x29a
  80002c0:	f000 f94e 	bl	8000560 <delayws>
-	GPIOA->ODR ^= MASK_LED_GREEN;
  80002c4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80002c8:	695b      	ldr	r3, [r3, #20]
  80002ca:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80002ce:	f083 0304 	eor.w	r3, r3, #4
  80002d2:	6153      	str	r3, [r2, #20]
-	if(!shouldbeon){return 1;}
  80002d4:	4b28      	ldr	r3, [pc, #160]	; (8000378 <lauflicht+0x138>)
  80002d6:	681b      	ldr	r3, [r3, #0]
  80002d8:	2b00      	cmp	r3, #0
  80002da:	d101      	bne.n	80002e0 <lauflicht+0xa0>
  80002dc:	2301      	movs	r3, #1
  80002de:	e048      	b.n	8000372 <lauflicht+0x132>
-	GPIOA->ODR ^= MASK_LED_BLUE;
  80002e0:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80002e4:	695b      	ldr	r3, [r3, #20]
  80002e6:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80002ea:	f083 0308 	eor.w	r3, r3, #8
  80002ee:	6153      	str	r3, [r2, #20]
-	delayws(WAITTIME);
  80002f0:	f240 209a 	movw	r0, #666	; 0x29a
  80002f4:	f000 f934 	bl	8000560 <delayws>
-	GPIOA->ODR ^= MASK_LED_BLUE; 		//Change of directions
  80002f8:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80002fc:	695b      	ldr	r3, [r3, #20]
  80002fe:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  8000302:	f083 0308 	eor.w	r3, r3, #8
  8000306:	6153      	str	r3, [r2, #20]
-	if(!shouldbeon){return 1;}
  8000308:	4b1b      	ldr	r3, [pc, #108]	; (8000378 <lauflicht+0x138>)
  800030a:	681b      	ldr	r3, [r3, #0]
  800030c:	2b00      	cmp	r3, #0
  800030e:	d101      	bne.n	8000314 <lauflicht+0xd4>
  8000310:	2301      	movs	r3, #1
  8000312:	e02e      	b.n	8000372 <lauflicht+0x132>
-	GPIOA->ODR ^= MASK_LED_GREEN;
  8000314:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000318:	695b      	ldr	r3, [r3, #20]
  800031a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800031e:	f083 0304 	eor.w	r3, r3, #4
  8000322:	6153      	str	r3, [r2, #20]
-	delayws(WAITTIME);
  8000324:	f240 209a 	movw	r0, #666	; 0x29a
  8000328:	f000 f91a 	bl	8000560 <delayws>
-	GPIOA->ODR ^= MASK_LED_GREEN;
  800032c:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000330:	695b      	ldr	r3, [r3, #20]
  8000332:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  8000336:	f083 0304 	eor.w	r3, r3, #4
  800033a:	6153      	str	r3, [r2, #20]
-	if(!shouldbeon){return 1;}
  800033c:	4b0e      	ldr	r3, [pc, #56]	; (8000378 <lauflicht+0x138>)
  800033e:	681b      	ldr	r3, [r3, #0]
  8000340:	2b00      	cmp	r3, #0
  8000342:	d101      	bne.n	8000348 <lauflicht+0x108>
  8000344:	2301      	movs	r3, #1
  8000346:	e014      	b.n	8000372 <lauflicht+0x132>
-	GPIOA->ODR ^= MASK_LED_YELLOW;
  8000348:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  800034c:	695b      	ldr	r3, [r3, #20]
  800034e:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  8000352:	f083 0302 	eor.w	r3, r3, #2
  8000356:	6153      	str	r3, [r2, #20]
-	delayws(WAITTIME);
  8000358:	f240 209a 	movw	r0, #666	; 0x29a
  800035c:	f000 f900 	bl	8000560 <delayws>
-	GPIOA->ODR ^= MASK_LED_YELLOW;
  8000360:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000364:	695b      	ldr	r3, [r3, #20]
  8000366:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800036a:	f083 0302 	eor.w	r3, r3, #2
  800036e:	6153      	str	r3, [r2, #20]
-	return 0;
  8000370:	2300      	movs	r3, #0
-}
  8000372:	4618      	mov	r0, r3
  8000374:	bd80      	pop	{r7, pc}
  8000376:	bf00      	nop
  8000378:	20000020 	.word	0x20000020
 
 0800037c <read2>:
-
-int read2(void){
  800037c:	b480      	push	{r7}
  800037e:	b083      	sub	sp, #12
  8000380:	af00      	add	r7, sp, #0
-	int is_on = GPIOB->IDR;				//Load button S2 into memory
  8000382:	4b08      	ldr	r3, [pc, #32]	; (80003a4 <read2+0x28>)
  8000384:	691b      	ldr	r3, [r3, #16]
  8000386:	607b      	str	r3, [r7, #4]
-	return !((is_on & (1<<5))>>5);		//Bitmask to isolate the value of S2 and move it to LSB. Invert because low-active
  8000388:	687b      	ldr	r3, [r7, #4]
  800038a:	f003 0320 	and.w	r3, r3, #32
  800038e:	2b00      	cmp	r3, #0
@@ -285,7 +221,6 @@ int read2(void){
  8000392:	2301      	moveq	r3, #1
  8000394:	2300      	movne	r3, #0
  8000396:	b2db      	uxtb	r3, r3
-}
  8000398:	4618      	mov	r0, r3
  800039a:	370c      	adds	r7, #12
  800039c:	46bd      	mov	sp, r7
@@ -294,15 +229,11 @@ int read2(void){
  80003a4:	48000400 	.word	0x48000400
 
 080003a8 <statecheck>:
-
-void statecheck(void){					//Statecheck checks for changes in the Button
  80003a8:	b580      	push	{r7, lr}
  80003aa:	b082      	sub	sp, #8
  80003ac:	af00      	add	r7, sp, #0
-	int now = read2();
  80003ae:	f7ff ffe5 	bl	800037c <read2>
  80003b2:	6078      	str	r0, [r7, #4]
-	if(now && buttonbefore != now){
  80003b4:	687b      	ldr	r3, [r7, #4]
  80003b6:	2b00      	cmp	r3, #0
  80003b8:	d01a      	beq.n	80003f0 <statecheck+0x48>
@@ -311,40 +242,29 @@ void statecheck(void){					//Statecheck checks for changes in the Button
  80003be:	687a      	ldr	r2, [r7, #4]
  80003c0:	429a      	cmp	r2, r3
  80003c2:	d015      	beq.n	80003f0 <statecheck+0x48>
-		if(shouldbeon){
  80003c4:	4b0f      	ldr	r3, [pc, #60]	; (8000404 <statecheck+0x5c>)
  80003c6:	681b      	ldr	r3, [r3, #0]
  80003c8:	2b00      	cmp	r3, #0
  80003ca:	d006      	beq.n	80003da <statecheck+0x32>
-			shouldbeon = 0;
  80003cc:	4b0d      	ldr	r3, [pc, #52]	; (8000404 <statecheck+0x5c>)
  80003ce:	2200      	movs	r2, #0
  80003d0:	601a      	str	r2, [r3, #0]
-			delay(75);					//The delay debounces the button S2, so statecheck does not run again, if a change was detected
  80003d2:	204b      	movs	r0, #75	; 0x4b
  80003d4:	f000 f8a2 	bl	800051c <delay>
  80003d8:	e00a      	b.n	80003f0 <statecheck+0x48>
-		}
-		else if(buttonbefore != now){
  80003da:	4b09      	ldr	r3, [pc, #36]	; (8000400 <statecheck+0x58>)
  80003dc:	681b      	ldr	r3, [r3, #0]
  80003de:	687a      	ldr	r2, [r7, #4]
  80003e0:	429a      	cmp	r2, r3
  80003e2:	d005      	beq.n	80003f0 <statecheck+0x48>
-			shouldbeon = 1;
  80003e4:	4b07      	ldr	r3, [pc, #28]	; (8000404 <statecheck+0x5c>)
  80003e6:	2201      	movs	r2, #1
  80003e8:	601a      	str	r2, [r3, #0]
-			delay(75);
  80003ea:	204b      	movs	r0, #75	; 0x4b
  80003ec:	f000 f896 	bl	800051c <delay>
-		}
-	}
-	buttonbefore = now;
  80003f0:	4a03      	ldr	r2, [pc, #12]	; (8000400 <statecheck+0x58>)
  80003f2:	687b      	ldr	r3, [r7, #4]
  80003f4:	6013      	str	r3, [r2, #0]
-}
  80003f6:	bf00      	nop
  80003f8:	3708      	adds	r7, #8
  80003fa:	46bd      	mov	sp, r7
@@ -354,125 +274,93 @@ void statecheck(void){					//Statecheck checks for changes in the Button
  8000404:	20000020 	.word	0x20000020
 
 08000408 <GPIO_init>:
- * requires:    - nothing -
- * parameters:  - none -
- * returns:     - nothing -
-\* ------------------------------------------------------------------------------------ */
-static void GPIO_init(void)
-{
  8000408:	b480      	push	{r7}
  800040a:	af00      	add	r7, sp, #0
-    /* enable port clocks*/
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // LEDs: A
  800040c:	4b41      	ldr	r3, [pc, #260]	; (8000514 <GPIO_init+0x10c>)
  800040e:	6cdb      	ldr	r3, [r3, #76]	; 0x4c
  8000410:	4a40      	ldr	r2, [pc, #256]	; (8000514 <GPIO_init+0x10c>)
  8000412:	f043 0301 	orr.w	r3, r3, #1
  8000416:	64d3      	str	r3, [r2, #76]	; 0x4c
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;    // Buttons: B
  8000418:	4b3e      	ldr	r3, [pc, #248]	; (8000514 <GPIO_init+0x10c>)
  800041a:	6cdb      	ldr	r3, [r3, #76]	; 0x4c
  800041c:	4a3d      	ldr	r2, [pc, #244]	; (8000514 <GPIO_init+0x10c>)
  800041e:	f043 0302 	orr.w	r3, r3, #2
  8000422:	64d3      	str	r3, [r2, #76]	; 0x4c
-
-    /* --- LEDs --- */
-    GPIOA->ODR |= MASK_LED_RED;
  8000424:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000428:	695b      	ldr	r3, [r3, #20]
  800042a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800042e:	f043 0301 	orr.w	r3, r3, #1
  8000432:	6153      	str	r3, [r2, #20]
-    GPIOA->MODER &= ~(3 << 0);
  8000434:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000438:	681b      	ldr	r3, [r3, #0]
  800043a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800043e:	f023 0303 	bic.w	r3, r3, #3
  8000442:	6013      	str	r3, [r2, #0]
-    GPIOA->MODER |= (1 << 0);               // set LED 0 pin (PA0) to output
  8000444:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000448:	681b      	ldr	r3, [r3, #0]
  800044a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800044e:	f043 0301 	orr.w	r3, r3, #1
  8000452:	6013      	str	r3, [r2, #0]
-
-    GPIOA->ODR |= MASK_LED_YELLOW;
  8000454:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000458:	695b      	ldr	r3, [r3, #20]
  800045a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800045e:	f043 0302 	orr.w	r3, r3, #2
  8000462:	6153      	str	r3, [r2, #20]
-    GPIOA->MODER &= ~(3 << 2);
  8000464:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000468:	681b      	ldr	r3, [r3, #0]
  800046a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800046e:	f023 030c 	bic.w	r3, r3, #12
  8000472:	6013      	str	r3, [r2, #0]
-    GPIOA->MODER |= (1 << 2);               // set LED 1 pin (PA1) to output
  8000474:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000478:	681b      	ldr	r3, [r3, #0]
  800047a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800047e:	f043 0304 	orr.w	r3, r3, #4
  8000482:	6013      	str	r3, [r2, #0]
-
-    GPIOA->ODR |= MASK_LED_GREEN;
  8000484:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000488:	695b      	ldr	r3, [r3, #20]
  800048a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800048e:	f043 0304 	orr.w	r3, r3, #4
  8000492:	6153      	str	r3, [r2, #20]
-    GPIOA->MODER &= ~(3 << 4);
  8000494:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000498:	681b      	ldr	r3, [r3, #0]
  800049a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800049e:	f023 0330 	bic.w	r3, r3, #48	; 0x30
  80004a2:	6013      	str	r3, [r2, #0]
-    GPIOA->MODER |= (1 << 4);               // set LED 2 pin (PA2) to output
  80004a4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80004a8:	681b      	ldr	r3, [r3, #0]
  80004aa:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80004ae:	f043 0310 	orr.w	r3, r3, #16
  80004b2:	6013      	str	r3, [r2, #0]
-
-    GPIOA->ODR |= MASK_LED_BLUE;
  80004b4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80004b8:	695b      	ldr	r3, [r3, #20]
  80004ba:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80004be:	f043 0308 	orr.w	r3, r3, #8
  80004c2:	6153      	str	r3, [r2, #20]
-    GPIOA->MODER &= ~(3 << 6);
  80004c4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80004c8:	681b      	ldr	r3, [r3, #0]
  80004ca:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80004ce:	f023 03c0 	bic.w	r3, r3, #192	; 0xc0
  80004d2:	6013      	str	r3, [r2, #0]
-    GPIOA->MODER |= (1 << 6);               // set LED 3 pin (PA3) to output
  80004d4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80004d8:	681b      	ldr	r3, [r3, #0]
  80004da:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80004de:	f043 0340 	orr.w	r3, r3, #64	; 0x40
  80004e2:	6013      	str	r3, [r2, #0]
-
-    //GPIOB->ODR |= MASK_S2;
-    GPIOB->MODER &= ~(3 << 10);             // set Button 2 pin (PB5) to input
  80004e4:	4b0c      	ldr	r3, [pc, #48]	; (8000518 <GPIO_init+0x110>)
  80004e6:	681b      	ldr	r3, [r3, #0]
  80004e8:	4a0b      	ldr	r2, [pc, #44]	; (8000518 <GPIO_init+0x110>)
  80004ea:	f423 6340 	bic.w	r3, r3, #3072	; 0xc00
  80004ee:	6013      	str	r3, [r2, #0]
-    GPIOB->PUPDR &= ~(3 << 10);				// PULL-UP
  80004f0:	4b09      	ldr	r3, [pc, #36]	; (8000518 <GPIO_init+0x110>)
  80004f2:	68db      	ldr	r3, [r3, #12]
  80004f4:	4a08      	ldr	r2, [pc, #32]	; (8000518 <GPIO_init+0x110>)
  80004f6:	f423 6340 	bic.w	r3, r3, #3072	; 0xc00
  80004fa:	60d3      	str	r3, [r2, #12]
-    GPIOB->PUPDR |=  (1 << 10);
  80004fc:	4b06      	ldr	r3, [pc, #24]	; (8000518 <GPIO_init+0x110>)
  80004fe:	68db      	ldr	r3, [r3, #12]
  8000500:	4a05      	ldr	r2, [pc, #20]	; (8000518 <GPIO_init+0x110>)
  8000502:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
  8000506:	60d3      	str	r3, [r2, #12]
-}
  8000508:	bf00      	nop
  800050a:	46bd      	mov	sp, r7
  800050c:	f85d 7b04 	ldr.w	r7, [sp], #4
@@ -482,31 +370,18 @@ static void GPIO_init(void)
  8000518:	48000400 	.word	0x48000400
 
 0800051c <delay>:
- * requires:    - nothing -
- * parameters:  ms - delay time in milliseconds
- * returns:     - nothing -
-\* ------------------------------------------------------------------------------------ */
-static void delay(const uint16_t ms)
-{
  800051c:	b480      	push	{r7}
  800051e:	b085      	sub	sp, #20
  8000520:	af00      	add	r7, sp, #0
  8000522:	4603      	mov	r3, r0
  8000524:	80fb      	strh	r3, [r7, #6]
-
-    for (uint16_t i = 0; i < ms; ++i)
  8000526:	2300      	movs	r3, #0
  8000528:	81fb      	strh	r3, [r7, #14]
  800052a:	e00e      	b.n	800054a <delay+0x2e>
-    {
-        for (uint16_t j = 0; j < LOOPS_PER_MS; ++j)
  800052c:	2300      	movs	r3, #0
  800052e:	81bb      	strh	r3, [r7, #12]
  8000530:	e003      	b.n	800053a <delay+0x1e>
-        {
-            __asm("NOP");
  8000532:	bf00      	nop
-        for (uint16_t j = 0; j < LOOPS_PER_MS; ++j)
  8000534:	89bb      	ldrh	r3, [r7, #12]
  8000536:	3301      	adds	r3, #1
  8000538:	81bb      	strh	r3, [r7, #12]
@@ -514,7 +389,6 @@ static void delay(const uint16_t ms)
  800053c:	f240 226d 	movw	r2, #621	; 0x26d
  8000540:	4293      	cmp	r3, r2
  8000542:	d9f6      	bls.n	8000532 <delay+0x16>
-    for (uint16_t i = 0; i < ms; ++i)
  8000544:	89fb      	ldrh	r3, [r7, #14]
  8000546:	3301      	adds	r3, #1
  8000548:	81fb      	strh	r3, [r7, #14]
@@ -522,9 +396,6 @@ static void delay(const uint16_t ms)
  800054c:	88fb      	ldrh	r3, [r7, #6]
  800054e:	429a      	cmp	r2, r3
  8000550:	d3ec      	bcc.n	800052c <delay+0x10>
-        }
-    }
-}
  8000552:	bf00      	nop
  8000554:	bf00      	nop
  8000556:	3714      	adds	r7, #20
@@ -533,33 +404,19 @@ static void delay(const uint16_t ms)
  800055e:	4770      	bx	lr
 
 08000560 <delayws>:
- * parameters:  ms - delay time in milliseconds
- * returns:     - nothing -
-\* ------------------------------------------------------------------------------------ */
-
-static void delayws(const uint16_t ms)
-{
  8000560:	b580      	push	{r7, lr}
  8000562:	b084      	sub	sp, #16
  8000564:	af00      	add	r7, sp, #0
  8000566:	4603      	mov	r3, r0
  8000568:	80fb      	strh	r3, [r7, #6]
-
-    for (uint16_t i = 0; i < ms; ++i)
  800056a:	2300      	movs	r3, #0
  800056c:	81fb      	strh	r3, [r7, #14]
  800056e:	e010      	b.n	8000592 <delayws+0x32>
-    {
-    	statecheck();
  8000570:	f7ff ff1a 	bl	80003a8 <statecheck>
-        for (uint16_t j = 0; j < LOOPS_PER_MS; ++j)
  8000574:	2300      	movs	r3, #0
  8000576:	81bb      	strh	r3, [r7, #12]
  8000578:	e003      	b.n	8000582 <delayws+0x22>
-        {
-            __asm("NOP");
  800057a:	bf00      	nop
-        for (uint16_t j = 0; j < LOOPS_PER_MS; ++j)
  800057c:	89bb      	ldrh	r3, [r7, #12]
  800057e:	3301      	adds	r3, #1
  8000580:	81bb      	strh	r3, [r7, #12]
@@ -567,7 +424,6 @@ static void delayws(const uint16_t ms)
  8000584:	f240 226d 	movw	r2, #621	; 0x26d
  8000588:	4293      	cmp	r3, r2
  800058a:	d9f6      	bls.n	800057a <delayws+0x1a>
-    for (uint16_t i = 0; i < ms; ++i)
  800058c:	89fb      	ldrh	r3, [r7, #14]
  800058e:	3301      	adds	r3, #1
  8000590:	81fb      	strh	r3, [r7, #14]
@@ -575,9 +431,6 @@ static void delayws(const uint16_t ms)
  8000594:	88fb      	ldrh	r3, [r7, #6]
  8000596:	429a      	cmp	r2, r3
  8000598:	d3ea      	bcc.n	8000570 <delayws+0x10>
-        }
-    }
-}
  800059a:	bf00      	nop
  800059c:	bf00      	nop
  800059e:	3710      	adds	r7, #16
@@ -585,38 +438,24 @@ static void delayws(const uint16_t ms)
  80005a2:	bd80      	pop	{r7, pc}
 
 080005a4 <ISR_error>:
- *
- * Default interrupt handler for core interrupts.
- * Enables the green and red LED on the STefi Light board.
-\* ------------------------------------------------------------------------------------ */
-void ISR_error(void)
-{
  80005a4:	b480      	push	{r7}
  80005a6:	af00      	add	r7, sp, #0
-    /* init */
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // PA: clock on (LEDs)
  80005a8:	4b10      	ldr	r3, [pc, #64]	; (80005ec <ISR_error+0x48>)
  80005aa:	6cdb      	ldr	r3, [r3, #76]	; 0x4c
  80005ac:	4a0f      	ldr	r2, [pc, #60]	; (80005ec <ISR_error+0x48>)
  80005ae:	f043 0301 	orr.w	r3, r3, #1
  80005b2:	64d3      	str	r3, [r2, #76]	; 0x4c
-    GPIOA->ODR |= MASK_LED_ALL;
  80005b4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80005b8:	695b      	ldr	r3, [r3, #20]
  80005ba:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80005be:	f043 030f 	orr.w	r3, r3, #15
  80005c2:	6153      	str	r3, [r2, #20]
-    GPIOA->MODER = (GPIOA->MODER & 0xFFFFFF00) | 0x11;
  80005c4:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80005c8:	681b      	ldr	r3, [r3, #0]
  80005ca:	f023 03ff 	bic.w	r3, r3, #255	; 0xff
  80005ce:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  80005d2:	f043 0311 	orr.w	r3, r3, #17
  80005d6:	6013      	str	r3, [r2, #0]
-
-    while(1)
-    {   /* light up the LEDs permanently */
-        GPIOA->ODR &= ~(MASK_LED_GREEN | MASK_LED_RED);
  80005d8:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  80005dc:	695b      	ldr	r3, [r3, #20]
  80005de:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
@@ -627,37 +466,24 @@ void ISR_error(void)
  80005ec:	40021000 	.word	0x40021000
 
 080005f0 <ISR_default>:
- *
- * Default interrupt handler for non-core interrupts.
- * Enables the blue and yellow LED on the STefi Light board.
-\* ------------------------------------------------------------------------------------ */
-void ISR_default(void)
-{
  80005f0:	b480      	push	{r7}
  80005f2:	af00      	add	r7, sp, #0
-    /* init */
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // PA: clock on (LEDs)
  80005f4:	4b10      	ldr	r3, [pc, #64]	; (8000638 <ISR_default+0x48>)
  80005f6:	6cdb      	ldr	r3, [r3, #76]	; 0x4c
  80005f8:	4a0f      	ldr	r2, [pc, #60]	; (8000638 <ISR_default+0x48>)
  80005fa:	f043 0301 	orr.w	r3, r3, #1
  80005fe:	64d3      	str	r3, [r2, #76]	; 0x4c
-    GPIOA->ODR |= MASK_LED_ALL;
  8000600:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000604:	695b      	ldr	r3, [r3, #20]
  8000606:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800060a:	f043 030f 	orr.w	r3, r3, #15
  800060e:	6153      	str	r3, [r2, #20]
-    GPIOA->MODER = (GPIOA->MODER & 0xFFFFFF00) | 0x44;
  8000610:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000614:	681b      	ldr	r3, [r3, #0]
  8000616:	f023 03ff 	bic.w	r3, r3, #255	; 0xff
  800061a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
  800061e:	f043 0344 	orr.w	r3, r3, #68	; 0x44
  8000622:	6013      	str	r3, [r2, #0]
-
-    while(1)
-    {   /* light up the LEDs permanently */        GPIOA->ODR &= ~(MASK_LED_BLUE | MASK_LED_YELLOW);
  8000624:	f04f 4390 	mov.w	r3, #1207959552	; 0x48000000
  8000628:	695b      	ldr	r3, [r3, #20]
  800062a:	f04f 4290 	mov.w	r2, #1207959552	; 0x48000000
@@ -668,99 +494,45 @@ void ISR_default(void)
  8000638:	40021000 	.word	0x40021000
 
 0800063c <Reset_Handler>:
-
-  .section .text.Reset_Handler
-  .weak Reset_Handler
-  .type Reset_Handler, %function
-Reset_Handler:
-  ldr   r0, =_estack
  800063c:	480c      	ldr	r0, [pc, #48]	; (8000670 <LoopForever+0x2>)
-  mov   sp, r0          /* set stack pointer */
  800063e:	4685      	mov	sp, r0
-/* Call the clock system initialization function.*/
-//  bl  SystemInit
-
-/* Copy the data segment initializers from flash to SRAM */
-  ldr r0, =_sdata
  8000640:	480c      	ldr	r0, [pc, #48]	; (8000674 <LoopForever+0x6>)
-  ldr r1, =_edata
  8000642:	490d      	ldr	r1, [pc, #52]	; (8000678 <LoopForever+0xa>)
-  ldr r2, =_sidata
  8000644:	4a0d      	ldr	r2, [pc, #52]	; (800067c <LoopForever+0xe>)
-  movs r3, #0
  8000646:	2300      	movs	r3, #0
-  b LoopCopyDataInit
  8000648:	e002      	b.n	8000650 <LoopCopyDataInit>
 
 0800064a <CopyDataInit>:
-
-CopyDataInit:
-  ldr r4, [r2, r3]
  800064a:	58d4      	ldr	r4, [r2, r3]
-  str r4, [r0, r3]
  800064c:	50c4      	str	r4, [r0, r3]
-  adds r3, r3, #4
  800064e:	3304      	adds	r3, #4
 
 08000650 <LoopCopyDataInit>:
-
-LoopCopyDataInit:
-  adds r4, r0, r3
  8000650:	18c4      	adds	r4, r0, r3
-  cmp r4, r1
  8000652:	428c      	cmp	r4, r1
-  bcc CopyDataInit
  8000654:	d3f9      	bcc.n	800064a <CopyDataInit>
-
-/* Zero fill the bss segment. */
-  ldr r2, =_sbss
  8000656:	4a0a      	ldr	r2, [pc, #40]	; (8000680 <LoopForever+0x12>)
-  ldr r4, =_ebss
  8000658:	4c0a      	ldr	r4, [pc, #40]	; (8000684 <LoopForever+0x16>)
-  movs r3, #0
  800065a:	2300      	movs	r3, #0
-  b LoopFillZerobss
  800065c:	e001      	b.n	8000662 <LoopFillZerobss>
 
 0800065e <FillZerobss>:
-
-FillZerobss:
-  str  r3, [r2]
  800065e:	6013      	str	r3, [r2, #0]
-  adds r2, r2, #4
  8000660:	3204      	adds	r2, #4
 
 08000662 <LoopFillZerobss>:
-
-LoopFillZerobss:
-  cmp r2, r4
  8000662:	42a2      	cmp	r2, r4
-  bcc FillZerobss
  8000664:	d3fb      	bcc.n	800065e <FillZerobss>
-
-/* Call static constructors */
-  bl __libc_init_array
  8000666:	f000 f80f 	bl	8000688 <__libc_init_array>
-/* Call the application's entry point.*/
-  bl main
  800066a:	f7ff fdd5 	bl	8000218 <main>
 
 0800066e <LoopForever>:
-
-LoopForever:
-    b LoopForever
  800066e:	e7fe      	b.n	800066e <LoopForever>
-  ldr   r0, =_estack
  8000670:	20008000 	.word	0x20008000
-  ldr r0, =_sdata
  8000674:	20000000 	.word	0x20000000
-  ldr r1, =_edata
  8000678:	20000000 	.word	0x20000000
-  ldr r2, =_sidata
  800067c:	080006f0 	.word	0x080006f0
-  ldr r2, =_sbss
  8000680:	20000000 	.word	0x20000000
-  ldr r4, =_ebss
  8000684:	20000024 	.word	0x20000024
 
 08000688 <__libc_init_array>:
