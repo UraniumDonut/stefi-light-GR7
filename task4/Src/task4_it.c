@@ -36,14 +36,18 @@
 
 
 /* ------------------------------------ DEFINES --------------------------------------- */
+#define LOOPS_PER_MS    622             // NOP-loops for delay()
+#define WAITTIME        222
 /* ------------------------------------ TYPE DEFINITIONS ------------------------------ */
 
 
 /* ------------------------------------ GLOBAL VARIABLES ------------------------------ */
 extern void* _estack;           // initial stack pointer from ldscript
 extern void* Reset_Handler;     // exception handler from startup code
-
-
+int freqmode = 2048;
+int updown;
+int count;
+int debouncecount = -1;
 /* ------------------------------------ PRIVATE VARIABLES ----------------------------- */
 /* ------------------------------------ PROTOTYPES ------------------------------------ */
 
@@ -103,11 +107,60 @@ void button1(void){
  *
  * N.B. Don't forget to initialize the timer in task4.c!
 \* ------------------------------------------------------------------------------------ */
+int read1(void){
+	int is_on = GPIOB->IDR;				//Load button S2 into memory
+	return !((is_on & (1<<4))>>4);		//Bitmask to isolate the value of S2 and move it to LSB. Invert because low-active
+}
+int read2(void){
+	int is_on = GPIOB->IDR;				//Load button S2 into memory
+	return !((is_on & (1<<5))>>5);		//Bitmask to isolate the value of S2 and move it to LSB. Invert because low-active
+}
 void ISR_sysTick(void)
 {
+	count ++;
+	if(debouncecount > 0){
+		debouncecount --;
+	}
+	else if(debouncecount == 0){
+		if(updown == 2){
+			if(read1()){
+				if(freqmode != 256){
+					freqmode = freqmode / 2;
+				}
+			}
+		}
+		if(updown == 1){
+				if(read2()){
+					if(freqmode != 4096){
+						freqmode = freqmode * 2;
+					}
+				}
+			}
+		debouncecount = -1;
+	}
 
-    /* ... place your code here ... */
-
+	if(count>freqmode&&freqmode == 4096){
+		GPIOA->ODR |= 0x0F;
+	}
+	else if(count>freqmode&&freqmode == 2048){
+		GPIOA->ODR ^= MASK_LED_RED;
+		GPIOA->ODR |= ~MASK_LED_RED;
+	}
+	else if(count>freqmode&&freqmode == 1024){
+		GPIOA->ODR ^= MASK_LED_YELLOW;
+		GPIOA->ODR |= ~MASK_LED_YELLOW;
+	}
+	else if(count>freqmode&&freqmode == 512){
+		GPIOA->ODR ^= MASK_LED_GREEN;
+		GPIOA->ODR |= ~MASK_LED_GREEN;
+	}
+	else if(count>freqmode&&freqmode == 256){
+		GPIOA->ODR ^= MASK_LED_BLUE;
+		GPIOA->ODR |= ~MASK_LED_BLUE;
+	}
+	if(count >= (freqmode+1)){
+		count = 0;
+	}
 }
 
 
@@ -120,19 +173,32 @@ void ISR_sysTick(void)
 \* ------------------------------------------------------------------------------------ */
  void ISR_4(void)
  {
-     //toggle led 1
-        GPIOA->ODR ^= MASK_LED_RED;
-    //reset interrupt
-     EXTI->PR1 |= 0x1; 
-    
+	 /*int takt= SysTick->LOAD;
+	 SysTick->LOAD = 0x3AAAA;
+		 if(takt > 0xEAAAA){
+		 	  takt = takt/2;
+		 	  SysTick->LOAD = takt;
+
+	 }*/
+	 updown = 2;
+	 debouncecount = 30;
+	      EXTI->PR1 |= 0x1;
  }
 
  void ISR_5(void)
  {
-     //toggle led 1
-        GPIOA->ODR ^= MASK_LED_RED;
+	 /*int takt= SysTick->LOAD;
+	 if(takt <= 0x755554){
+	     	 takt = takt*2;
+	      	 SysTick->LOAD = takt;
 
+	 }*/
+	 updown = 1;
+	 debouncecount = 30;
+	 EXTI->PR1 |= 0x1;
  }
+
+
 
 
 /* ------------------------------------ INTERRUPT VECTOR TABLE ------------------------ */

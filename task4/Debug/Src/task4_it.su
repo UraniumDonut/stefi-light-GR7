@@ -1,6 +1,8 @@
-task4_it.c:59:6:ISR_error	4	static
-task4_it.c:79:6:ISR_default	4	static
-task4_it.c:93:6:button1	4	static
-task4_it.c:106:6:ISR_sysTick	4	static
-task4_it.c:121:7:ISR_4	4	static
-task4_it.c:130:7:ISR_5	4	static
+task4_it.c:63:6:ISR_error	4	static
+task4_it.c:83:6:ISR_default	4	static
+task4_it.c:97:6:button1	4	static
+task4_it.c:110:5:read1	16	static
+task4_it.c:114:5:read2	16	static
+task4_it.c:118:6:ISR_sysTick	8	static
+task4_it.c:174:7:ISR_4	4	static
+task4_it.c:188:7:ISR_5	4	static

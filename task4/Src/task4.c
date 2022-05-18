@@ -63,9 +63,7 @@ int main(void)
     /* --- infinite processing loop --- */
     while (1)
     {
-        /* ... add your code to implement the lab assignment ... */
 
-        //GPIOA->ODR ^= MASK_LED_RED;
 
     }
 
@@ -124,15 +122,18 @@ static void GPIO_init(void)
     GPIOB->PUPDR &= ~(3 << 10);
     GPIOB->PUPDR |= (1 << 10);
 
-    SysTick->LOAD = 0x2625A00;
+    SysTick->LOAD = 0xCAF;				// 1hz 755554, 2hz 3AAAAA, 4hz 1D5555, 8hz EAAAA, 1024hz CAF
     SysTick->VAL = 0;
     SysTick->CTRL = 0x07;
 
     SYSCFG->EXTICR[1] |= (1 << 0);
     SYSCFG->EXTICR[1] |= (1 << 4);
 
+
     EXTI->IMR1 |= (3 << 4);
     EXTI->FTSR1 |= (3 << 4);
+
+
 
     NVIC->ISER[0] |= (1 << 10);
     NVIC->ISER[0] |= (1 << 23);
