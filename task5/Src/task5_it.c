@@ -43,7 +43,10 @@
 extern void* _estack;           // initial stack pointer from ldscript
 extern void* Reset_Handler;     // exception handler from startup code
 
-
+int pressed = 0;
+int count;
+int debouncecount = -1;
+int curled;
 /* ------------------------------------ PRIVATE VARIABLES ----------------------------- */
 /* ------------------------------------ PROTOTYPES ------------------------------------ */
 
@@ -98,26 +101,67 @@ void ISR_default(void)
  *
  * N.B. Don't forget to initialize the timer in task4.c!
 \* ------------------------------------------------------------------------------------ */
+
+int read0(void){
+	int is_on = GPIOB->IDR;				//Load button S2 into memory
+	return !((is_on & (1<<0))>>0);		//Bitmask to isolate the value of S2 and move it to LSB. Invert because low-active
+}
+
+
 void ISR_sysTick(void)
 {
 
-    /* ... place your code here ... */
+	count ++;
+	if(debouncecount > 0){
+		debouncecount --;
+	}
+	else if(debouncecount == 0){
+
+		if(pressed == 1){
+				if(read0()){
+					if(curled != 4){
+						curled ++;
+						pressed = 0;
+						//count = 0;   		für unabhängig
+					}
+				}
+			}
+		debouncecount = -1;
+	}
+
+	GPIOA->ODR |= 0xF;
+
+	if(curled == 1){
+		GPIOA->ODR = ~MASK_LED_RED;
+	}
+	else if(curled ==2){
+		GPIOA->ODR = ~MASK_LED_YELLOW;
+	}
+	else if(curled ==3){
+			GPIOA->ODR = ~MASK_LED_GREEN;
+		}
+	else if(curled ==4){
+			GPIOA->ODR = ~MASK_LED_BLUE;
+		}
+
+	if(count >= (4096)){
+			count = 0;
+			if(curled != 0){
+				curled --;
+			}
+		}
+
 
 }
 
 
-/* --- ISR template: --- */
+void ISR_0(void)
+{
+	 pressed = 1;
+	 debouncecount = 30;
+	      EXTI->PR1 |= 0x1;
+}
 
-/* ------------------------------------------------------------------------------------ *\
- * method:  void ISR_...(void)
- *
- * Interrupt handler for ...
-\* ------------------------------------------------------------------------------------ */
-// void ISR_...(void)
-// {
-//
-//     /* ... place your code here ... */
-// }
 
 
 /* ------------------------------------ INTERRUPT VECTOR TABLE ------------------------ */
@@ -149,7 +193,7 @@ void (* const paIsrFunc[118])(void) =
 	ISR_default,            /*   3 (0x0000004C)  RTC Wakeup timer through EXTI line 20 interrupt */
 	ISR_default,            /*   4 (0x00000050)  Flash global interrupt */
 	ISR_default,            /*   5 (0x00000054)  RCC global interrupt */
-	ISR_default,            /*   6 (0x00000058)  EXTI Line 0 interrupt */
+	ISR_0,            /*   6 (0x00000058)  EXTI Line 0 interrupt */
 	ISR_default,            /*   7 (0x0000005C)  EXTI Line 1 interrupt */
 	ISR_default,            /*   8 (0x00000060)  EXTI Line 2 interrupt */
 	ISR_default,            /*   9 (0x00000064)  EXTI Line 3 interrupt */

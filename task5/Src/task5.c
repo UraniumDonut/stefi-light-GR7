@@ -64,7 +64,6 @@ int main(void)
     {
         /* ... add your code to implement the lab assignment ... */
 
-        GPIOA->ODR ^= MASK_LED_RED;
     }
 
     return 1;
@@ -87,14 +86,50 @@ int main(void)
 \* ------------------------------------------------------------------------------------ */
 static void GPIO_init(void)
 {
-    /* enable port clocks */
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // LEDs: A
+	/* enable port clocks */
+	    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;    // LEDs: A
+	    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN;    // Buttons: B
+	    RCC->APB2ENR |= 1;						// Multiplexer Takt
 
 
-    /* --- LEDs --- */
-    GPIOA->ODR |= MASK_LED_RED;
-    GPIOA->MODER &= ~(3 << 0);
-    GPIOA->MODER |= (1 << 0);               // set LED pin to output
+	    /* --- LEDs --- */
+	    GPIOA->ODR |= MASK_LED_RED;
+	    GPIOA->MODER &= ~(3 << 0);
+	    GPIOA->MODER |= (1 << 0);               // set LED pin to output
+
+	    GPIOA->ODR |= MASK_LED_YELLOW;
+	    GPIOA->MODER &= ~(3 << 2);
+	    GPIOA->MODER |= (1 << 2);               // set LED 1 pin (PA1) to output
+
+	    GPIOA->ODR |= MASK_LED_GREEN;
+	    GPIOA->MODER &= ~(3 << 4);
+	    GPIOA->MODER |= (1 << 4);               // set LED 2 pin (PA2) to output
+
+	    GPIOA->ODR |= MASK_LED_BLUE;
+	    GPIOA->MODER &= ~(3 << 6);
+	    GPIOA->MODER |= (1 << 6);               // set LED 3 pin (PA3) to output
+
+	    GPIOB->IDR |= MASK_S0;
+	    GPIOB->MODER &= ~(3 << 0);
+
+
+	    GPIOB->PUPDR &= ~(3 << 0);
+	    GPIOB->PUPDR |= (1 << 0);
+
+	    SysTick->LOAD = 0xCAF;				// 1hz 755554, 2hz 3AAAAA, 4hz 1D5555, 8hz EAAAA, 1024hz CAF
+	    SysTick->VAL = 0;
+	    SysTick->CTRL = 0x07;
+
+	    SYSCFG->EXTICR[0] |= (1 << 0);
+
+
+	    EXTI->IMR1 |= (1 << 0);
+	    EXTI->FTSR1 |= (1 << 0);
+
+
+
+	    NVIC->ISER[0] |= (1 << 6);
+	    NVIC->ICPR[0] |= (1 << 6);
 }
 
 
